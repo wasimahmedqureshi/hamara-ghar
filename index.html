@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Cloud - Private Family Photos</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="hero-section">
+        <nav class="hero-nav">
+            <h1 class="logo">🏠 FamilyCloud</h1>
+            <div>
+                <a href="login.html" class="btn btn-primary">Login</a>
+                <a href="#features" class="btn btn-secondary">Features</a>
+            </div>
+        </nav>
+        
+        <div class="hero-content">
+            <h1>Your Family's Private Digital Album</h1>
+            <p>Safe, secure, and private - only for your family members</p>
+            <a href="login.html" class="btn btn-large">Get Started →</a>
+        </div>
+    </div>
+
+    <div id="features" class="features-section">
+        <h2>Why Choose FamilyCloud?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔒</div>
+                <h3>Private & Secure</h3>
+                <p>Password protected access only for family members</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📸</div>
+                <h3>Photo Albums</h3>
+                <p>Create and organize family photo albums</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⬇️</div>
+                <h3>Easy Download</h3>
+                <p>Download photos with one click</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📴</div>
+                <h3>Offline Access</h3>
+                <p>View photos even without internet</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2024 FamilyCloud - Your Private Family Space</p>
+    </footer>
+
+    <script>
+        // Check if already logged in
+        if (localStorage.getItem('loggedIn') === 'true') {
+            window.location.href = 'dashboard.html';
+        }
+    </script>
+</body>
+</html>
