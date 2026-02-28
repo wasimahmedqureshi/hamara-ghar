@@ -1,325 +1,1699 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FamilyCloud - Your Private Family Space</title>
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1a0a2e">
+<meta name="description" content="Private Family Cloud - Apni Family ki Yaadein Surakshit Rakhein">
+<title>FamilyCloud — परिवार की यादें</title>
+<link rel="manifest" href="manifest.json">
+
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #0d0a1e;
+    --surface: #16102e;
+    --surface2: #1f1640;
+    --border: rgba(255,255,255,0.08);
+    --accent: #ff6b9d;
+    --accent2: #c77dff;
+    --accent3: #48cae4;
+    --text: #f0e6ff;
+    --text-muted: #8b7aa8;
+    --gold: #ffd166;
+    --radius: 16px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── BACKGROUND MESH ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(199,125,255,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 80% at 80% 80%, rgba(255,107,157,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 50% 50%, rgba(72,202,228,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  /* ── VIEWS ── */
+  .view { display: none; position: relative; z-index: 1; }
+  .view.active { display: flex; }
+
+  /* ══════════════════════════════
+     LOGIN SCREEN
+  ══════════════════════════════ */
+  #loginView {
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 24px;
+  }
+
+  .login-card {
+    background: rgba(22, 16, 46, 0.85);
+    backdrop-filter: blur(24px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: var(--shadow), 0 0 80px rgba(199,125,255,0.1);
+    animation: slideUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .login-logo {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .logo-icon {
+    width: 72px; height: 72px;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    margin: 0 auto 16px;
+    box-shadow: 0 0 40px rgba(199,125,255,0.4);
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 40px rgba(199,125,255,0.4); }
+    50% { box-shadow: 0 0 60px rgba(199,125,255,0.7); }
+  }
+
+  .login-logo h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .login-logo p {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-top: 4px;
+  }
+
+  .member-select {
+    margin-bottom: 24px;
+  }
+
+  .member-select label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .member-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+
+  .member-btn {
+    background: var(--surface2);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    padding: 12px 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: var(--text);
+    text-align: center;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .member-btn:hover, .member-btn.selected {
+    border-color: var(--accent2);
+    background: rgba(199,125,255,0.12);
+  }
+
+  .member-avatar {
+    font-size: 28px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .member-name {
+    font-size: 11px;
+    font-weight: 500;
+  }
+
+  .input-group {
+    margin-bottom: 16px;
+  }
+
+  .input-group label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .input-group input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .input-group input:focus {
+    border-color: var(--accent2);
+  }
+
+  .btn-primary {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border: none;
+    border-radius: 12px;
+    padding: 16px;
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-top: 8px;
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(199,125,255,0.4);
+  }
+
+  .error-msg {
+    color: var(--accent);
+    font-size: 13px;
+    text-align: center;
+    margin-top: 12px;
+    display: none;
+  }
+
+  .offline-badge {
+    position: fixed;
+    top: 16px; right: 16px;
+    background: var(--accent);
+    color: white;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: none;
+    z-index: 999;
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* ══════════════════════════════
+     MAIN APP
+  ══════════════════════════════ */
+  #appView {
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(13, 10, 30, 0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 64px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .header-left {
+    display: flex; align-items: center; gap: 12px;
+  }
+
+  .header-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .user-pill {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 12px 6px 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 14px;
+  }
+
+  .user-pill:hover {
+    border-color: var(--accent2);
+  }
+
+  .header-actions {
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .icon-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    font-size: 18px;
+    transition: all 0.2s;
+    color: var(--text);
+  }
+
+  .icon-btn:hover {
+    border-color: var(--accent2);
+    background: rgba(199,125,255,0.1);
+  }
+
+  /* ── TABS ── */
+  .app-tabs {
+    display: flex;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    gap: 4px;
+    overflow-x: auto;
+  }
+
+  .tab-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 14px 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .tab-btn.active {
+    color: var(--accent2);
+    border-bottom-color: var(--accent2);
+  }
+
+  /* ── CONTENT AREA ── */
+  .app-content {
+    flex: 1;
+    padding: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* ── SECTION HEADER ── */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    font-weight: 700;
+  }
+
+  /* ── UPLOAD ZONE ── */
+  .upload-zone {
+    border: 2px dashed rgba(199,125,255,0.3);
+    border-radius: var(--radius);
+    padding: 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 28px;
+    background: rgba(199,125,255,0.03);
+    position: relative;
+  }
+
+  .upload-zone:hover, .upload-zone.drag-over {
+    border-color: var(--accent2);
+    background: rgba(199,125,255,0.08);
+  }
+
+  .upload-zone input[type="file"] {
+    position: absolute; inset: 0;
+    opacity: 0; cursor: pointer;
+    width: 100%; height: 100%;
+  }
+
+  .upload-icon { font-size: 48px; margin-bottom: 12px; }
+  .upload-zone h3 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+  .upload-zone p { color: var(--text-muted); font-size: 14px; }
+
+  /* ── ALBUM GRID ── */
+  .albums-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+
+  .album-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+    group: true;
+  }
+
+  .album-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+    border-color: var(--accent2);
+  }
+
+  .album-thumb {
+    height: 160px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 60px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .album-thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    position: absolute; inset: 0;
+  }
+
+  .album-gradient {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 60%;
+    background: linear-gradient(transparent, rgba(0,0,0,0.7));
+  }
+
+  .album-info {
+    padding: 14px;
+  }
+
+  .album-name {
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 4px;
+  }
+
+  .album-count {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  /* ── PHOTO GRID ── */
+  .photos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+  }
+
+  .photo-item {
+    aspect-ratio: 1;
+    background: var(--surface);
+    border-radius: 12px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    border: 1px solid var(--border);
+  }
+
+  .photo-item:hover {
+    transform: scale(1.03);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+
+  .photo-item img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .photo-overlay {
+    position: absolute; inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center; justify-content: center;
+    gap: 12px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .photo-item:hover .photo-overlay { opacity: 1; }
+
+  .photo-action {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(8px);
+    border: none;
+    border-radius: 8px;
+    width: 40px; height: 40px;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+
+  .photo-action:hover { background: rgba(255,255,255,0.3); }
+
+  .photo-label {
+    position: absolute;
+    bottom: 8px; left: 8px;
+    font-size: 11px;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    padding: 3px 8px;
+    border-radius: 4px;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .photo-item:hover .photo-label { opacity: 1; }
+
+  /* ── LIGHTBOX ── */
+  .lightbox {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(0,0,0,0.95);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s;
+  }
+
+  .lightbox.open { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+
+  .lightbox-img {
+    max-width: 90vw;
+    max-height: 85vh;
+    border-radius: 12px;
+    object-fit: contain;
+    box-shadow: 0 0 60px rgba(0,0,0,0.8);
+  }
+
+  .lightbox-close {
+    position: fixed; top: 20px; right: 20px;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    border-radius: 50%;
+    width: 44px; height: 44px;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .lightbox-actions {
+    position: fixed;
+    bottom: 30px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 12px;
+  }
+
+  .lightbox-btn {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 12px;
+    padding: 10px 20px;
+    color: white;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    display: flex; align-items: center; gap: 8px;
+    transition: all 0.2s;
+  }
+
+  .lightbox-btn:hover {
+    background: rgba(255,255,255,0.2);
+  }
+
+  .lightbox-btn.download-btn {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border-color: transparent;
+  }
+
+  /* ── MEMBERS SECTION ── */
+  .members-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 16px;
+  }
+
+  .member-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .member-card:hover {
+    border-color: var(--accent2);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(199,125,255,0.2);
+  }
+
+  .member-card-avatar {
+    font-size: 52px;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .member-card-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .member-card-role {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .member-card-count {
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--accent2);
+    font-weight: 500;
+  }
+
+  /* ── MEMORIES ── */
+  .memory-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .memory-entry {
+    display: flex;
+    gap: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    transition: all 0.2s;
+  }
+
+  .memory-entry:hover {
+    border-color: rgba(199,125,255,0.4);
+  }
+
+  .memory-date {
+    flex-shrink: 0;
+    width: 56px;
+    text-align: center;
+  }
+
+  .memory-day {
+    font-size: 28px;
+    font-weight: 700;
+    font-family: 'Playfair Display', serif;
+    color: var(--accent2);
+    line-height: 1;
+  }
+
+  .memory-month {
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  .memory-content { flex: 1; }
+
+  .memory-title {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .memory-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .memory-photos {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+  }
+
+  .memory-thumb {
+    width: 70px; height: 70px;
+    border-radius: 8px;
+    background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .memory-thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+
+  /* ── ADD ALBUM MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: var(--shadow);
+    animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1);
+  }
+
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 24px;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(199,125,255,0.15);
+    border: 1px solid rgba(199,125,255,0.3);
+    color: var(--accent2);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .offline-banner {
+    background: rgba(255,107,157,0.1);
+    border: 1px solid rgba(255,107,157,0.3);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--accent);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .storage-bar {
+    background: var(--surface2);
+    border-radius: 4px;
+    height: 6px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+
+  .storage-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 4px;
+    width: 34%;
+  }
+
+  .storage-info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  .btn-sm {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border: none;
+    border-radius: 10px;
+    padding: 10px 18px;
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-sm:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px rgba(199,125,255,0.4);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 18px;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--accent2);
+    color: var(--text);
+  }
+
+  /* ── BACK BUTTON ── */
+  .back-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 16px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+    margin-bottom: 20px;
+    transition: all 0.2s;
+  }
+
+  .back-btn:hover { border-color: var(--accent2); }
+
+  /* Empty state */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-muted);
+  }
+  .empty-state .es-icon { font-size: 52px; margin-bottom: 16px; }
+  .empty-state h3 { font-size: 18px; color: var(--text); margin-bottom: 8px; }
+  .empty-state p { font-size: 14px; line-height: 1.6; }
+
+  /* ── TAB PANELS ── */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px; right: 24px;
+    background: var(--surface);
+    border: 1px solid rgba(199,125,255,0.4);
+    border-radius: 12px;
+    padding: 14px 20px;
+    font-size: 14px;
+    z-index: 999;
+    box-shadow: var(--shadow);
+    transform: translateY(80px);
+    opacity: 0;
+    transition: all 0.3s;
+    max-width: 300px;
+  }
+
+  .toast.show {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 3px; }
+
+  @media (max-width: 600px) {
+    .login-card { padding: 32px 24px; }
+    .member-grid { grid-template-columns: repeat(3, 1fr); }
+    .albums-grid { grid-template-columns: repeat(2, 1fr); }
+    .photos-grid { grid-template-columns: repeat(2, 1fr); }
+    .app-content { padding: 16px; }
+  }
+</style>
 </head>
 <body>
-    <!-- Modern Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">
-                <i class="fas fa-cloud"></i>
-                <span>FamilyCloud</span>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="#home" class="active">Home</a></li>
-                <li><a href="#features">Features</a></li>
-                <li><a href="#how-it-works">How It Works</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="login.html" class="nav-btn-primary">Login</a></li>
-            </ul>
-            <div class="hamburger">
-                <i class="fas fa-bars"></i>
-            </div>
+
+<!-- Offline Badge -->
+<div class="offline-badge" id="offlineBadge">📡 Offline Mode</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ══════════ LOGIN VIEW ══════════ -->
+<div class="view active" id="loginView">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="logo-icon">🏠</div>
+      <h1>FamilyCloud</h1>
+      <p>परिवार की हर याद — सुरक्षित, हमेशा के लिए</p>
+    </div>
+
+    <div class="member-select">
+      <label>👥 परिवार का सदस्य चुनें</label>
+      <div class="member-grid" id="memberGrid">
+        <button class="member-btn" onclick="selectMember(this,'Papa','👨')" data-name="Papa">
+          <span class="member-avatar">👨</span>
+          <span class="member-name">Papa</span>
+        </button>
+        <button class="member-btn" onclick="selectMember(this,'Mama','👩')" data-name="Mama">
+          <span class="member-avatar">👩</span>
+          <span class="member-name">Mama</span>
+        </button>
+        <button class="member-btn" onclick="selectMember(this,'Bhaiya','👦')" data-name="Bhaiya">
+          <span class="member-avatar">👦</span>
+          <span class="member-name">Bhaiya</span>
+        </button>
+        <button class="member-btn" onclick="selectMember(this,'Didi','👧')" data-name="Didi">
+          <span class="member-avatar">👧</span>
+          <span class="member-name">Didi</span>
+        </button>
+        <button class="member-btn" onclick="selectMember(this,'Dada','👴')" data-name="Dada">
+          <span class="member-avatar">👴</span>
+          <span class="member-name">Dada</span>
+        </button>
+        <button class="member-btn" onclick="selectMember(this,'Dadi','👵')" data-name="Dadi">
+          <span class="member-avatar">👵</span>
+          <span class="member-name">Dadi</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label>🔑 Family Password</label>
+      <input type="password" id="pwInput" placeholder="Family secret password डालें..." />
+    </div>
+
+    <button class="btn-primary" onclick="doLogin()">✨ प्रवेश करें</button>
+    <p class="error-msg" id="errMsg">❌ गलत password! दुबारा कोशिश करें।</p>
+
+    <p style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:20px;">
+      Demo password: <strong style="color:var(--accent2)">family123</strong>
+    </p>
+  </div>
+</div>
+
+<!-- ══════════ APP VIEW ══════════ -->
+<div class="view" id="appView">
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-left">
+      <span class="header-logo">🏠 FamilyCloud</span>
+    </div>
+    <div class="header-actions">
+      <span class="badge" id="userBadge">👤 User</span>
+      <button class="icon-btn" onclick="openAddAlbum()" title="Album बनाएं">➕</button>
+      <button class="icon-btn" onclick="doLogout()" title="Logout">🚪</button>
+    </div>
+  </header>
+
+  <!-- Tabs -->
+  <nav class="app-tabs">
+    <button class="tab-btn active" onclick="switchTab('albums',this)">🖼️ Albums</button>
+    <button class="tab-btn" onclick="switchTab('photos',this)">📷 Photos</button>
+    <button class="tab-btn" onclick="switchTab('memories',this)">💝 Memories</button>
+    <button class="tab-btn" onclick="switchTab('members',this)">👨‍👩‍👧‍👦 Members</button>
+    <button class="tab-btn" onclick="switchTab('settings',this)">⚙️ Settings</button>
+  </nav>
+
+  <!-- Content -->
+  <div class="app-content">
+
+    <!-- ── ALBUMS TAB ── -->
+    <div class="tab-panel active" id="tab-albums">
+      <div id="albumListView">
+        <div class="section-header">
+          <h2 class="section-title">Photo Albums</h2>
+          <button class="btn-sm" onclick="openAddAlbum()">+ New Album</button>
         </div>
-    </nav>
 
-    <!-- Hero Section with Animation -->
-    <section id="home" class="hero">
-        <div class="hero-container">
-            <div class="hero-content">
-                <h1 class="animate-text">Your Family's <span class="gradient-text">Private Digital Album</span></h1>
-                <p class="animate-text-delay">Safe, secure, and exclusively for your family members. Create beautiful memories that last forever.</p>
-                <div class="hero-buttons">
-                    <a href="login.html" class="btn-primary">
-                        <i class="fas fa-lock"></i> Enter Family Space
-                    </a>
-                    <a href="#features" class="btn-secondary">
-                        <i class="fas fa-play"></i> See How It Works
-                    </a>
-                </div>
-                <div class="hero-stats">
-                    <div class="stat-item">
-                        <h3>10K+</h3>
-                        <p>Family Photos</p>
-                    </div>
-                    <div class="stat-item">
-                        <h3>500+</h3>
-                        <p>Happy Families</p>
-                    </div>
-                    <div class="stat-item">
-                        <h3>100%</h3>
-                        <p>Private & Secure</p>
-                    </div>
-                </div>
-            </div>
-            <div class="hero-image">
-                <img src="https://images.unsplash.com/photo-1511895426328-dc8714191300?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Family">
-                <div class="floating-card card-1">
-                    <i class="fas fa-lock"></i> 100% Private
-                </div>
-                <div class="floating-card card-2">
-                    <i class="fas fa-cloud-upload-alt"></i> Easy Upload
-                </div>
-            </div>
+        <!-- Upload Zone -->
+        <div class="upload-zone" id="mainUploadZone">
+          <input type="file" multiple accept="image/*,video/*" id="mainFileInput" onchange="handleFiles(this.files)">
+          <div class="upload-icon">📁</div>
+          <h3>Photos यहाँ Drop करें</h3>
+          <p>या click करके select करें • JPG, PNG, MP4 supported</p>
         </div>
-    </section>
 
-    <!-- Features Section -->
-    <section id="features" class="features">
-        <div class="container">
-            <div class="section-header">
-                <h2>Why Families <span class="gradient-text">Love Us</span></h2>
-                <p>Everything you need to keep family memories safe and accessible</p>
-            </div>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3>Bank-Level Security</h3>
-                    <p>Your family photos are protected with enterprise-grade encryption. Only authorized family members can access.</p>
-                    <a href="#" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-images"></i>
-                    </div>
-                    <h3>Smart Albums</h3>
-                    <p>Automatically organize photos by date, event, or family member. Create custom albums in seconds.</p>
-                    <a href="#" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-download"></i>
-                    </div>
-                    <h3>One-Click Download</h3>
-                    <p>Download entire albums or single photos with one click. Share memories with family instantly.</p>
-                    <a href="#" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-wifi"></i>
-                    </div>
-                    <h3>Offline Access</h3>
-                    <p>View your favorite photos even without internet. Perfect for trips and family gatherings.</p>
-                    <a href="#" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-mobile-alt"></i>
-                    </div>
-                    <h3>Mobile Friendly</h3>
-                    <p>Access from any device - phone, tablet, or computer. Perfect for tech-savvy and non-tech family members.</p>
-                    <a href="#" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
-                </div>
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-infinity"></i>
-                    </div>
-                    <h3>Free Forever</h3>
-                    <p>No hidden costs, no subscriptions. Completely free for your family to use forever.</p>
-                    <a href="#" class="feature-link">Learn more <i class="fas fa-arrow-right"></i></a>
-                </div>
-            </div>
+        <div class="albums-grid" id="albumsGrid"></div>
+      </div>
+
+      <!-- Album Detail View -->
+      <div id="albumDetailView" style="display:none;">
+        <button class="back-btn" onclick="showAlbumList()">← Albums पर वापस जाएं</button>
+        <div class="section-header">
+          <h2 class="section-title" id="albumDetailTitle">Album</h2>
+          <button class="btn-sm" id="downloadAlbumBtn">⬇ Download All</button>
         </div>
-    </section>
+        <div class="photos-grid" id="albumPhotosGrid"></div>
+      </div>
+    </div>
 
-    <!-- How It Works -->
-    <section id="how-it-works" class="how-it-works">
-        <div class="container">
-            <div class="section-header">
-                <h2>Simple <span class="gradient-text">3-Step</span> Process</h2>
-                <p>Get started with FamilyCloud in minutes</p>
-            </div>
-            <div class="steps-container">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <div class="step-icon">
-                        <i class="fas fa-user-plus"></i>
-                    </div>
-                    <h3>Create Account</h3>
-                    <p>Sign up with your family email. We'll send invites to all family members.</p>
-                </div>
-                <div class="step-connector"></div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <div class="step-icon">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                    </div>
-                    <h3>Upload Photos</h3>
-                    <p>Drag and drop your photos. Create albums for different events and memories.</p>
-                </div>
-                <div class="step-connector"></div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <div class="step-icon">
-                        <i class="fas fa-heart"></i>
-                    </div>
-                    <h3>Enjoy Together</h3>
-                    <p>Family members can view, download, and relive memories from anywhere.</p>
-                </div>
-            </div>
+    <!-- ── PHOTOS TAB ── -->
+    <div class="tab-panel" id="tab-photos">
+      <div class="section-header">
+        <h2 class="section-title">All Photos</h2>
+        <div style="display:flex;gap:8px;">
+          <button class="btn-ghost" onclick="sortPhotos()">🔀 Sort</button>
+          <button class="btn-sm" onclick="document.getElementById('mainFileInput2').click()">+ Add Photos</button>
+          <input type="file" id="mainFileInput2" multiple accept="image/*,video/*" style="display:none" onchange="handleFiles(this.files)">
         </div>
-    </section>
+      </div>
+      <div class="photos-grid" id="allPhotosGrid"></div>
+    </div>
 
-    <!-- Testimonials -->
-    <section id="about" class="testimonials">
-        <div class="container">
-            <div class="section-header">
-                <h2>What Families <span class="gradient-text">Say</span></h2>
-                <p>Join hundreds of happy families using FamilyCloud</p>
-            </div>
-            <div class="testimonials-grid">
-                <div class="testimonial-card">
-                    <div class="testimonial-rating">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p>"Finally a private space for family photos! No ads, no sharing with strangers. Perfect for our family of 8 members spread across 3 countries."</p>
-                    <div class="testimonial-author">
-                        <img src="https://randomuser.me/api/portraits/women/65.jpg" alt="Sarah">
-                        <div>
-                            <h4>Sarah Johnson</h4>
-                            <span>Mother of 3</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-rating">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p>"The offline mode is a lifesaver! We used it during our family reunion in the mountains where there was no internet. Everyone could still see the photos."</p>
-                    <div class="testimonial-author">
-                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Michael">
-                        <div>
-                            <h4>Michael Chen</h4>
-                            <span>Family Organizer</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="testimonial-card">
-                    <div class="testimonial-rating">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <p>"My grandparents love it! So easy to use that even my 80-year-old grandmother can browse photos of her great-grandchildren."</p>
-                    <div class="testimonial-author">
-                        <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Priya">
-                        <div>
-                            <h4>Priya Patel</h4>
-                            <span>Daughter & Mom</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- ── MEMORIES TAB ── -->
+    <div class="tab-panel" id="tab-memories">
+      <div class="section-header">
+        <h2 class="section-title">💝 Yaadein</h2>
+        <button class="btn-sm" onclick="addMemory()">+ Add Memory</button>
+      </div>
+      <div class="memory-timeline" id="memoryTimeline"></div>
+    </div>
+
+    <!-- ── MEMBERS TAB ── -->
+    <div class="tab-panel" id="tab-members">
+      <div class="section-header">
+        <h2 class="section-title">👨‍👩‍👧‍👦 Family Members</h2>
+        <button class="btn-sm" onclick="openAddMember()">+ Add Member</button>
+      </div>
+      <div class="members-grid" id="membersGrid"></div>
+    </div>
+
+    <!-- ── SETTINGS TAB ── -->
+    <div class="tab-panel" id="tab-settings">
+      <div class="section-header">
+        <h2 class="section-title">⚙️ Settings</h2>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:16px;max-width:500px;">
+        
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;">
+          <h3 style="font-size:16px;margin-bottom:12px;">💾 Storage Usage</h3>
+          <div class="storage-bar"><div class="storage-fill" id="storageBar"></div></div>
+          <div class="storage-info">
+            <span id="storageUsed">0 MB used</span>
+            <span>∞ Local Storage</span>
+          </div>
         </div>
-    </section>
 
-    <!-- CTA Section -->
-    <section class="cta">
-        <div class="container">
-            <div class="cta-content">
-                <h2>Ready to Start Your Family's Digital Album?</h2>
-                <p>Join thousands of families who trust us with their precious memories</p>
-                <a href="login.html" class="btn-primary btn-large">
-                    <i class="fas fa-rocket"></i> Get Started Now
-                </a>
-                <p class="cta-note">No credit card required • Free forever</p>
-            </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;">
+          <h3 style="font-size:16px;margin-bottom:12px;">📱 Offline Mode</h3>
+          <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">App offline bhi kaam karti hai. All photos local storage mein save hain.</p>
+          <div class="badge">✅ Offline Ready</div>
         </div>
-    </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-col">
-                    <div class="footer-logo">
-                        <i class="fas fa-cloud"></i>
-                        <span>FamilyCloud</span>
-                    </div>
-                    <p>Keeping family memories safe, private, and accessible for generations.</p>
-                    <div class="social-links">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-linkedin"></i></a>
-                    </div>
-                </div>
-                <div class="footer-col">
-                    <h4>Quick Links</h4>
-                    <ul>
-                        <li><a href="#home">Home</a></li>
-                        <li><a href="#features">Features</a></li>
-                        <li><a href="#how-it-works">How It Works</a></li>
-                        <li><a href="#about">About Us</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Support</h4>
-                    <ul>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Help Center</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                    </ul>
-                </div>
-                <div class="footer-col">
-                    <h4>Contact</h4>
-                    <ul>
-                        <li><i class="fas fa-envelope"></i> support@familycloud.com</li>
-                        <li><i class="fas fa-phone"></i> +1 (555) 123-4567</li>
-                        <li><i class="fas fa-map-marker-alt"></i> San Francisco, CA</li>
-                    </ul>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2024 FamilyCloud. All rights reserved. Made with <i class="fas fa-heart"></i> for families</p>
-            </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;">
+          <h3 style="font-size:16px;margin-bottom:12px;">🔑 Change Password</h3>
+          <div class="input-group">
+            <label>New Password</label>
+            <input type="password" id="newPw" placeholder="Naya password..." style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;width:100%;">
+          </div>
+          <button class="btn-sm" onclick="changePassword()">Save Password</button>
         </div>
-    </footer>
 
-    <script>
-        // Mobile menu toggle
-        document.querySelector('.hamburger').addEventListener('click', function() {
-            document.querySelector('.nav-menu').classList.toggle('active');
-        });
+        <div style="background:rgba(255,107,157,0.08);border:1px solid rgba(255,107,157,0.3);border-radius:var(--radius);padding:20px;">
+          <h3 style="font-size:16px;margin-bottom:12px;color:var(--accent);">⚠️ Danger Zone</h3>
+          <button class="btn-ghost" style="border-color:rgba(255,107,157,0.4);color:var(--accent);" onclick="clearAll()">🗑️ All Data Delete करें</button>
+        </div>
 
-        // Smooth scrolling for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        });
+      </div>
+    </div>
 
-        // Check if already logged in
-        if (localStorage.getItem('loggedIn') === 'true') {
-            // Add "Go to Dashboard" button for logged-in users
-            const navMenu = document.querySelector('.nav-menu');
-            const dashboardLi = document.createElement('li');
-            dashboardLi.innerHTML = '<a href="dashboard.html" class="nav-btn-primary">Dashboard <i class="fas fa-arrow-right"></i></a>';
-            navMenu.appendChild(dashboardLi);
-        }
-    </script>
+  </div><!-- /app-content -->
+</div><!-- /appView -->
+
+<!-- ══════════ LIGHTBOX ══════════ -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <img class="lightbox-img" id="lightboxImg" src="" alt="">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <div class="lightbox-actions">
+    <button class="lightbox-btn" onclick="prevPhoto()">← Prev</button>
+    <button class="lightbox-btn download-btn" onclick="downloadCurrent()">⬇ Download</button>
+    <button class="lightbox-btn" onclick="nextPhoto()">Next →</button>
+  </div>
+</div>
+
+<!-- ══════════ ADD ALBUM MODAL ══════════ -->
+<div class="modal-overlay" id="addAlbumModal">
+  <div class="modal-box">
+    <h2 class="modal-title">📁 New Album बनाएं</h2>
+    <div class="input-group">
+      <label>Album Name</label>
+      <input type="text" id="albumNameInput" placeholder="जैसे: Diwali 2024, Shimla Trip...">
+    </div>
+    <div class="input-group">
+      <label>Album Emoji / Icon</label>
+      <input type="text" id="albumEmoji" placeholder="🎉 🏖️ 🎂 🌸 ..." value="📸">
+    </div>
+    <div style="display:flex;gap:12px;margin-top:8px;">
+      <button class="btn-primary" style="flex:1" onclick="createAlbum()">✨ Create</button>
+      <button class="btn-ghost" onclick="closeModal('addAlbumModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD MEMBER MODAL -->
+<div class="modal-overlay" id="addMemberModal">
+  <div class="modal-box">
+    <h2 class="modal-title">👤 New Member Add करें</h2>
+    <div class="input-group">
+      <label>Name</label>
+      <input type="text" id="newMemberName" placeholder="Name...">
+    </div>
+    <div class="input-group">
+      <label>Avatar Emoji</label>
+      <input type="text" id="newMemberEmoji" placeholder="👦 👧 👨 👩 ..." value="😊">
+    </div>
+    <div class="input-group">
+      <label>Role</label>
+      <input type="text" id="newMemberRole" placeholder="Jaise: Beta, Beti, Chacha...">
+    </div>
+    <div style="display:flex;gap:12px;margin-top:8px;">
+      <button class="btn-primary" style="flex:1" onclick="addMember()">✨ Add</button>
+      <button class="btn-ghost" onclick="closeModal('addMemberModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD MEMORY MODAL -->
+<div class="modal-overlay" id="addMemoryModal">
+  <div class="modal-box">
+    <h2 class="modal-title">💝 Memory Add करें</h2>
+    <div class="input-group">
+      <label>Title</label>
+      <input type="text" id="memTitle" placeholder="Jaise: Diwali celebration...">
+    </div>
+    <div class="input-group">
+      <label>Date</label>
+      <input type="date" id="memDate" style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;width:100%;">
+    </div>
+    <div class="input-group">
+      <label>Description</label>
+      <input type="text" id="memDesc" placeholder="Is din ki yaad...">
+    </div>
+    <div style="display:flex;gap:12px;margin-top:8px;">
+      <button class="btn-primary" style="flex:1" onclick="saveMemory()">💾 Save</button>
+      <button class="btn-ghost" onclick="closeModal('addMemoryModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ══════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════
+const PASS_KEY = 'fc_password';
+const DATA_KEY = 'fc_data';
+let currentUser = null;
+let currentPhotos = []; // for lightbox
+let currentPhotoIndex = 0;
+let currentAlbum = null;
+
+const DEFAULT_PASSWORD = 'family123';
+
+function loadData() {
+  try {
+    return JSON.parse(localStorage.getItem(DATA_KEY)) || defaultData();
+  } catch { return defaultData(); }
+}
+
+function saveData(d) {
+  localStorage.setItem(DATA_KEY, JSON.stringify(d));
+}
+
+function defaultData() {
+  return {
+    albums: [
+      { id: 'album-1', name: 'Diwali 2023', emoji: '🪔', photos: [], createdBy: 'Papa', createdAt: Date.now() - 86400000 * 30 },
+      { id: 'album-2', name: 'Shimla Trip', emoji: '🏔️', photos: [], createdBy: 'Mama', createdAt: Date.now() - 86400000 * 60 },
+    ],
+    photos: [],
+    members: [
+      { id: 'm1', name: 'Papa', emoji: '👨', role: 'Father', photoCount: 0 },
+      { id: 'm2', name: 'Mama', emoji: '👩', role: 'Mother', photoCount: 0 },
+      { id: 'm3', name: 'Bhaiya', emoji: '👦', role: 'Son', photoCount: 0 },
+      { id: 'm4', name: 'Didi', emoji: '👧', role: 'Daughter', photoCount: 0 },
+    ],
+    memories: [
+      { id: 'mem1', title: '🎉 Pehli Diwali Saath', date: '2023-11-12', desc: 'Is saal hamne saath milke Diwali celebrate ki. Bahut maza aaya!', photos: [] },
+      { id: 'mem2', title: '🏔️ Shimla Mein Barf', date: '2024-01-15', desc: 'Pehli baar bache ne barf dekhi, unki khushi dekh ke dil khush ho gaya.', photos: [] },
+    ]
+  };
+}
+
+// ══════════════════════════════════════
+//  LOGIN
+// ══════════════════════════════════════
+let selectedMember = null;
+
+function selectMember(btn, name, emoji) {
+  document.querySelectorAll('.member-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedMember = { name, emoji };
+}
+
+function doLogin() {
+  const pw = document.getElementById('pwInput').value;
+  const storedPw = localStorage.getItem(PASS_KEY) || DEFAULT_PASSWORD;
+  
+  if (!selectedMember) {
+    showToast('⚠️ Pehle apna naam chunein!');
+    return;
+  }
+  
+  if (pw === storedPw) {
+    currentUser = selectedMember;
+    document.getElementById('loginView').classList.remove('active');
+    document.getElementById('appView').classList.add('active');
+    document.getElementById('userBadge').textContent = selectedMember.emoji + ' ' + selectedMember.name;
+    renderAll();
+    updateStorageInfo();
+  } else {
+    document.getElementById('errMsg').style.display = 'block';
+    setTimeout(() => document.getElementById('errMsg').style.display = 'none', 3000);
+  }
+}
+
+document.getElementById('pwInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+function doLogout() {
+  document.getElementById('appView').classList.remove('active');
+  document.getElementById('loginView').classList.add('active');
+  currentUser = null;
+  document.getElementById('pwInput').value = '';
+  document.querySelectorAll('.member-btn').forEach(b => b.classList.remove('selected'));
+  selectedMember = null;
+}
+
+// ══════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (name === 'albums') showAlbumList();
+  if (name === 'photos') renderAllPhotos();
+  if (name === 'memories') renderMemories();
+  if (name === 'members') renderMembers();
+}
+
+// ══════════════════════════════════════
+//  FILE HANDLING
+// ══════════════════════════════════════
+function handleFiles(files) {
+  if (!files.length) return;
+  const data = loadData();
+  let count = 0;
+
+  Array.from(files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const photo = {
+        id: 'photo-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
+        name: file.name,
+        src: e.target.result,
+        type: file.type,
+        size: file.size,
+        uploadedBy: currentUser?.name || 'Unknown',
+        uploadedAt: Date.now(),
+        albumId: currentAlbum || null
+      };
+      data.photos.push(photo);
+      if (currentAlbum) {
+        const album = data.albums.find(a => a.id === currentAlbum);
+        if (album) album.photos.push(photo.id);
+      }
+      count++;
+      if (count === files.length) {
+        saveData(data);
+        renderAll();
+        showToast(`✅ ${count} photo${count > 1 ? 's' : ''} upload ho gaye!`);
+        updateStorageInfo();
+      }
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// Drag and drop
+const uploadZone = document.getElementById('mainUploadZone');
+uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
+uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
+uploadZone.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadZone.classList.remove('drag-over');
+  handleFiles(e.dataTransfer.files);
+});
+
+// ══════════════════════════════════════
+//  ALBUMS
+// ══════════════════════════════════════
+function renderAlbums() {
+  const data = loadData();
+  const grid = document.getElementById('albumsGrid');
+  
+  if (!data.albums.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">📂</div><h3>Koi album nahi</h3><p>New album banaiye ya photos upload karein</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = data.albums.map(album => {
+    const photos = data.photos.filter(p => album.photos.includes(p.id));
+    const thumbSrc = photos[0]?.src || null;
+    return `
+    <div class="album-card" onclick="openAlbum('${album.id}')">
+      <div class="album-thumb" style="background:linear-gradient(135deg,var(--surface2),var(--surface));">
+        ${thumbSrc ? `<img src="${thumbSrc}" alt="${album.name}">` : `<span style="font-size:52px;">${album.emoji}</span>`}
+        <div class="album-gradient"></div>
+      </div>
+      <div class="album-info">
+        <div class="album-name">${album.emoji} ${album.name}</div>
+        <div class="album-count">${photos.length} photos • ${album.createdBy}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openAlbum(id) {
+  currentAlbum = id;
+  const data = loadData();
+  const album = data.albums.find(a => a.id === id);
+  const photos = data.photos.filter(p => album.photos.includes(p.id));
+
+  document.getElementById('albumListView').style.display = 'none';
+  document.getElementById('albumDetailView').style.display = 'block';
+  document.getElementById('albumDetailTitle').textContent = album.emoji + ' ' + album.name;
+
+  const grid = document.getElementById('albumPhotosGrid');
+  if (!photos.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">📷</div><h3>Album empty hai</h3><p>Photos upload karein ya main upload zone use karein</p></div>`;
+  } else {
+    currentPhotos = photos;
+    grid.innerHTML = photos.map((p, i) => `
+      <div class="photo-item" onclick="openLightbox(${i})">
+        <img src="${p.src}" alt="${p.name}" loading="lazy">
+        <div class="photo-overlay">
+          <button class="photo-action" onclick="event.stopPropagation();downloadPhoto('${p.id}')">⬇</button>
+          <button class="photo-action" onclick="event.stopPropagation();deletePhoto('${p.id}')">🗑️</button>
+        </div>
+        <div class="photo-label">${p.name.length > 14 ? p.name.slice(0,12)+'...' : p.name}</div>
+      </div>`).join('');
+  }
+
+  document.getElementById('downloadAlbumBtn').onclick = () => downloadAlbum(id);
+}
+
+function showAlbumList() {
+  currentAlbum = null;
+  document.getElementById('albumListView').style.display = 'block';
+  document.getElementById('albumDetailView').style.display = 'none';
+  renderAlbums();
+}
+
+function openAddAlbum() {
+  document.getElementById('addAlbumModal').classList.add('open');
+  document.getElementById('albumNameInput').focus();
+}
+
+function createAlbum() {
+  const name = document.getElementById('albumNameInput').value.trim();
+  const emoji = document.getElementById('albumEmoji').value.trim() || '📸';
+  if (!name) { showToast('⚠️ Album ka naam daalo!'); return; }
+
+  const data = loadData();
+  data.albums.unshift({
+    id: 'album-' + Date.now(),
+    name, emoji, photos: [],
+    createdBy: currentUser?.name || 'Family',
+    createdAt: Date.now()
+  });
+  saveData(data);
+  closeModal('addAlbumModal');
+  document.getElementById('albumNameInput').value = '';
+  renderAlbums();
+  showToast(`📁 "${name}" album ban gaya!`);
+}
+
+// ══════════════════════════════════════
+//  ALL PHOTOS
+// ══════════════════════════════════════
+let photosSorted = false;
+
+function renderAllPhotos() {
+  const data = loadData();
+  const grid = document.getElementById('allPhotosGrid');
+  let photos = [...data.photos];
+  if (photosSorted) photos.sort((a,b) => a.name.localeCompare(b.name));
+  else photos.sort((a,b) => b.uploadedAt - a.uploadedAt);
+
+  if (!photos.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">📷</div><h3>Koi photo nahi</h3><p>Albums mein jakar photos upload karein</p></div>`;
+    return;
+  }
+
+  currentPhotos = photos;
+  grid.innerHTML = photos.map((p, i) => `
+    <div class="photo-item" onclick="openLightbox(${i})">
+      <img src="${p.src}" alt="${p.name}" loading="lazy">
+      <div class="photo-overlay">
+        <button class="photo-action" onclick="event.stopPropagation();downloadPhoto('${p.id}')">⬇</button>
+        <button class="photo-action" onclick="event.stopPropagation();deletePhoto('${p.id}')">🗑️</button>
+      </div>
+      <div class="photo-label">${p.uploadedBy}</div>
+    </div>`).join('');
+}
+
+function sortPhotos() {
+  photosSorted = !photosSorted;
+  renderAllPhotos();
+  showToast(photosSorted ? '🔤 Name se sort' : '🕐 Date se sort');
+}
+
+// ══════════════════════════════════════
+//  LIGHTBOX
+// ══════════════════════════════════════
+function openLightbox(index) {
+  currentPhotoIndex = index;
+  document.getElementById('lightboxImg').src = currentPhotos[index].src;
+  document.getElementById('lightbox').classList.add('open');
+}
+
+function closeLightbox(e) {
+  if (!e || e.target === document.getElementById('lightbox')) {
+    document.getElementById('lightbox').classList.remove('open');
+  }
+}
+
+function prevPhoto() {
+  currentPhotoIndex = (currentPhotoIndex - 1 + currentPhotos.length) % currentPhotos.length;
+  document.getElementById('lightboxImg').src = currentPhotos[currentPhotoIndex].src;
+}
+
+function nextPhoto() {
+  currentPhotoIndex = (currentPhotoIndex + 1) % currentPhotos.length;
+  document.getElementById('lightboxImg').src = currentPhotos[currentPhotoIndex].src;
+}
+
+function downloadCurrent() {
+  downloadPhoto(currentPhotos[currentPhotoIndex].id);
+}
+
+// ══════════════════════════════════════
+//  DOWNLOAD
+// ══════════════════════════════════════
+function downloadPhoto(photoId) {
+  const data = loadData();
+  const photo = data.photos.find(p => p.id === photoId);
+  if (!photo) return;
+  const a = document.createElement('a');
+  a.href = photo.src;
+  a.download = photo.name;
+  a.click();
+  showToast(`⬇ "${photo.name}" download ho raha hai...`);
+}
+
+function downloadAlbum(albumId) {
+  const data = loadData();
+  const album = data.albums.find(a => a.id === albumId);
+  const photos = data.photos.filter(p => album.photos.includes(p.id));
+  if (!photos.length) { showToast('❌ Album mein koi photo nahi!'); return; }
+
+  photos.forEach((photo, i) => {
+    setTimeout(() => {
+      const a = document.createElement('a');
+      a.href = photo.src;
+      a.download = photo.name;
+      a.click();
+    }, i * 300);
+  });
+  showToast(`⬇ ${photos.length} photos download ho rahe hain...`);
+}
+
+// ══════════════════════════════════════
+//  DELETE PHOTO
+// ══════════════════════════════════════
+function deletePhoto(photoId) {
+  if (!confirm('Yeh photo delete karna chahte hain?')) return;
+  const data = loadData();
+  data.photos = data.photos.filter(p => p.id !== photoId);
+  data.albums.forEach(a => {
+    a.photos = a.photos.filter(id => id !== photoId);
+  });
+  saveData(data);
+  renderAll();
+  showToast('🗑️ Photo delete ho gayi!');
+}
+
+// ══════════════════════════════════════
+//  MEMBERS
+// ══════════════════════════════════════
+function renderMembers() {
+  const data = loadData();
+  const grid = document.getElementById('membersGrid');
+
+  grid.innerHTML = data.members.map(m => {
+    const photoCount = data.photos.filter(p => p.uploadedBy === m.name).length;
+    return `
+    <div class="member-card">
+      <span class="member-card-avatar">${m.emoji}</span>
+      <div class="member-card-name">${m.name}</div>
+      <div class="member-card-role">${m.role}</div>
+      <div class="member-card-count">📷 ${photoCount} photos uploaded</div>
+    </div>`;
+  }).join('');
+}
+
+function openAddMember() {
+  document.getElementById('addMemberModal').classList.add('open');
+}
+
+function addMember() {
+  const name = document.getElementById('newMemberName').value.trim();
+  const emoji = document.getElementById('newMemberEmoji').value.trim() || '😊';
+  const role = document.getElementById('newMemberRole').value.trim() || 'Family Member';
+  if (!name) { showToast('⚠️ Naam daalo!'); return; }
+
+  const data = loadData();
+  data.members.push({ id: 'm-' + Date.now(), name, emoji, role });
+  saveData(data);
+  closeModal('addMemberModal');
+  renderMembers();
+  showToast(`👤 ${name} family mein add ho gaye!`);
+}
+
+// ══════════════════════════════════════
+//  MEMORIES
+// ══════════════════════════════════════
+function renderMemories() {
+  const data = loadData();
+  const timeline = document.getElementById('memoryTimeline');
+
+  if (!data.memories.length) {
+    timeline.innerHTML = `<div class="empty-state"><div class="es-icon">💝</div><h3>Koi memory nahi</h3><p>Apni special yaadon ko yahan save karein</p></div>`;
+    return;
+  }
+
+  timeline.innerHTML = data.memories.map(m => {
+    const d = new Date(m.date);
+    const day = d.getDate();
+    const month = d.toLocaleString('default', { month: 'short' });
+    return `
+    <div class="memory-entry">
+      <div class="memory-date">
+        <div class="memory-day">${day}</div>
+        <div class="memory-month">${month}</div>
+      </div>
+      <div class="memory-content">
+        <div class="memory-title">${m.title}</div>
+        <div class="memory-desc">${m.desc}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function addMemory() {
+  document.getElementById('memDate').valueAsDate = new Date();
+  document.getElementById('addMemoryModal').classList.add('open');
+}
+
+function saveMemory() {
+  const title = document.getElementById('memTitle').value.trim();
+  const date = document.getElementById('memDate').value;
+  const desc = document.getElementById('memDesc').value.trim();
+  if (!title || !date) { showToast('⚠️ Title aur date zaroor bharein!'); return; }
+
+  const data = loadData();
+  data.memories.unshift({ id: 'mem-' + Date.now(), title, date, desc, photos: [] });
+  saveData(data);
+  closeModal('addMemoryModal');
+  renderMemories();
+  showToast('💝 Memory save ho gayi!');
+}
+
+// ══════════════════════════════════════
+//  SETTINGS
+// ══════════════════════════════════════
+function changePassword() {
+  const np = document.getElementById('newPw').value;
+  if (!np || np.length < 4) { showToast('⚠️ Password kam se kam 4 characters ka hona chahiye!'); return; }
+  localStorage.setItem(PASS_KEY, np);
+  document.getElementById('newPw').value = '';
+  showToast('🔑 Password change ho gaya!');
+}
+
+function clearAll() {
+  if (!confirm('⚠️ Sab kuch delete ho jayega! Pakka?')) return;
+  if (!confirm('Bilkul pakka? Ek baar delete hone ke baad wapas nahi aayega!')) return;
+  localStorage.removeItem(DATA_KEY);
+  showToast('🗑️ Sab data delete ho gaya!');
+  renderAll();
+}
+
+function updateStorageInfo() {
+  try {
+    let total = 0;
+    for (let key in localStorage) {
+      if (localStorage.hasOwnProperty(key)) total += localStorage[key].length;
+    }
+    const mb = (total * 2 / 1024 / 1024).toFixed(1);
+    document.getElementById('storageUsed').textContent = mb + ' MB used';
+    const pct = Math.min((parseFloat(mb) / 50) * 100, 100);
+    document.getElementById('storageBar').style.width = pct + '%';
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════
+//  UTILS
+// ══════════════════════════════════════
+function renderAll() {
+  renderAlbums();
+  renderMembers();
+  renderMemories();
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    closeLightbox();
+    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+  }
+  if (document.getElementById('lightbox').classList.contains('open')) {
+    if (e.key === 'ArrowLeft') prevPhoto();
+    if (e.key === 'ArrowRight') nextPhoto();
+  }
+});
+
+// ══════════════════════════════════════
+//  OFFLINE DETECTION
+// ══════════════════════════════════════
+function updateOnlineStatus() {
+  const badge = document.getElementById('offlineBadge');
+  badge.style.display = navigator.onLine ? 'none' : 'block';
+}
+
+window.addEventListener('online', updateOnlineStatus);
+window.addEventListener('offline', updateOnlineStatus);
+updateOnlineStatus();
+
+// ══════════════════════════════════════
+//  SERVICE WORKER REGISTRATION
+// ══════════════════════════════════════
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').then(() => {
+      console.log('✅ Service Worker registered - Offline mode active!');
+    }).catch(() => {
+      console.log('SW registration failed - running without offline mode');
+    });
+  });
+}
+</script>
+
 </body>
 </html>
