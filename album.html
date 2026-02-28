@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Family Album</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav>
+        <h2>📸 Family Album</h2>
+        <button onclick="window.location.href='dashboard.html'">Back</button>
+    </nav>
+
+    <div class="album-grid" id="albumGrid">
+        <!-- Photos will be loaded here -->
+    </div>
+
+    <script>
+        // Sample family photos (replace with your actual images)
+        const familyPhotos = [
+            { name: 'Family Vacation', file: 'vacation.jpg' },
+            { name: 'Birthday Party', file: 'birthday.jpg' },
+            { name: 'Weekend Dinner', file: 'dinner.jpg' },
+            { name: 'Park Visit', file: 'park.jpg' },
+            { name: 'Holiday', file: 'holiday.jpg' },
+            { name: 'Family Reunion', file: 'reunion.jpg' }
+        ];
+
+        const grid = document.getElementById('albumGrid');
+        
+        familyPhotos.forEach(photo => {
+            const card = document.createElement('div');
+            card.className = 'photo-card';
+            card.innerHTML = `
+                <img src="images/${photo.file}" alt="${photo.name}" 
+                     onerror="this.src='https://via.placeholder.com/300'">
+                <h4>${photo.name}</h4>
+                <button onclick="downloadPhoto('${photo.file}')">Download</button>
+            `;
+            grid.appendChild(card);
+        });
+
+        function downloadPhoto(filename) {
+            const link = document.createElement('a');
+            link.href = `images/${filename}`;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
