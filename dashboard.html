@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Family Cloud - Dashboard</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <nav>
+        <h2>🏠 Family Cloud</h2>
+        <div>
+            <span>Welcome, <span id="userDisplay"></span>!</span>
+            <button onclick="logout()">Logout</button>
+        </div>
+    </nav>
+
+    <div class="dashboard">
+        <div class="card" onclick="location.href='album.html'">
+            <h3>📸 Family Album</h3>
+            <p>View and download family photos</p>
+        </div>
+        
+        <div class="card" onclick="downloadAll()">
+            <h3>⬇️ Download All</h3>
+            <p>Download all photos as ZIP</p>
+        </div>
+        
+        <div class="card" onclick="toggleOfflineMode()">
+            <h3>📴 Offline Mode</h3>
+            <p id="offlineStatus">Enable for offline access</p>
+        </div>
+    </div>
+
+    <script>
+        // Check login
+        if (!localStorage.getItem('loggedIn')) {
+            window.location.href = 'login.html';
+        }
+        document.getElementById('userDisplay').textContent = localStorage.getItem('user');
+
+        function logout() {
+            localStorage.removeItem('loggedIn');
+            window.location.href = 'login.html';
+        }
+
+        function downloadAll() {
+            // Create dummy photos for demo
+            const photos = ['photo1.jpg', 'photo2.jpg', 'photo3.jpg'];
+            
+            photos.forEach(photo => {
+                const link = document.createElement('a');
+                link.href = `images/${photo}`;
+                link.download = photo;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        }
+
+        function toggleOfflineMode() {
+            if ('caches' in window) {
+                caches.open('family-cloud-v1').then(cache => {
+                    cache.addAll([
+                        '/',
+                        '/index.html',
+                        '/login.html',
+                        '/dashboard.html',
+                        '/album.html',
+                        '/css/style.css',
+                        '/js/auth.js',
+                        '/js/album.js',
+                        '/images/'
+                    ]).then(() => {
+                        document.getElementById('offlineStatus').textContent = '✅ Offline mode enabled';
+                    });
+                });
+            }
+        }
+    </script>
+</body>
+</html>
