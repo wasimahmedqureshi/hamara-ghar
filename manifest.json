@@ -1,0 +1,19 @@
+{
+  "name": "FamilyCloud - परिवार की यादें",
+  "short_name": "FamilyCloud",
+  "description": "Private Family Photo Cloud - Apni family ki yaadein surakshit rakhein",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0d0a1e",
+  "theme_color": "#1a0a2e",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%231a0a2e'/><text y='.9em' font-size='80'>🏠</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["photo", "lifestyle", "utilities"],
+  "lang": "hi"
+}
