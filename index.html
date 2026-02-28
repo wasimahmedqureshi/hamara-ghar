@@ -1,1146 +1,425 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="ur" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#1a0a2e">
-<meta name="description" content="Private Family Cloud - Apni Family ki Yaadein Surakshit Rakhein">
-<title>FamilyCloud — परिवार की यादें</title>
+<meta name="theme-color" content="#0b1a0f">
+<meta name="description" content="Hamara Ghar — Private Family Cloud">
+<meta name="robots" content="noindex, nofollow, noarchive, noimageindex">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate">
+<title>Hamara Ghar 🏡</title>
 <link rel="manifest" href="manifest.json">
-
-<!-- Google Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #0d0a1e;
-    --surface: #16102e;
-    --surface2: #1f1640;
-    --border: rgba(255,255,255,0.08);
-    --accent: #ff6b9d;
-    --accent2: #c77dff;
-    --accent3: #48cae4;
-    --text: #f0e6ff;
-    --text-muted: #8b7aa8;
-    --gold: #ffd166;
-    --radius: 16px;
-    --shadow: 0 8px 32px rgba(0,0,0,0.4);
-  }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
-
-  /* ── BACKGROUND MESH ── */
-  body::before {
-    content: '';
-    position: fixed; inset: 0; z-index: 0;
-    background:
-      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(199,125,255,0.15) 0%, transparent 60%),
-      radial-gradient(ellipse 60% 80% at 80% 80%, rgba(255,107,157,0.12) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 50% at 50% 50%, rgba(72,202,228,0.06) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
-  /* ── VIEWS ── */
-  .view { display: none; position: relative; z-index: 1; }
-  .view.active { display: flex; }
-
-  /* ══════════════════════════════
-     LOGIN SCREEN
-  ══════════════════════════════ */
-  #loginView {
-    min-height: 100vh;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    padding: 24px;
-  }
-
-  .login-card {
-    background: rgba(22, 16, 46, 0.85);
-    backdrop-filter: blur(24px);
-    border: 1px solid var(--border);
-    border-radius: 24px;
-    padding: 48px 40px;
-    width: 100%;
-    max-width: 420px;
-    box-shadow: var(--shadow), 0 0 80px rgba(199,125,255,0.1);
-    animation: slideUp 0.6s cubic-bezier(0.16,1,0.3,1) both;
-  }
-
-  @keyframes slideUp {
-    from { opacity: 0; transform: translateY(40px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .login-logo {
-    text-align: center;
-    margin-bottom: 32px;
-  }
-
-  .logo-icon {
-    width: 72px; height: 72px;
-    background: linear-gradient(135deg, var(--accent2), var(--accent));
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 32px;
-    margin: 0 auto 16px;
-    box-shadow: 0 0 40px rgba(199,125,255,0.4);
-    animation: pulse 3s ease-in-out infinite;
-  }
-
-  @keyframes pulse {
-    0%,100% { box-shadow: 0 0 40px rgba(199,125,255,0.4); }
-    50% { box-shadow: 0 0 60px rgba(199,125,255,0.7); }
-  }
-
-  .login-logo h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    font-weight: 700;
-    background: linear-gradient(135deg, var(--accent2), var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .login-logo p {
-    color: var(--text-muted);
-    font-size: 13px;
-    margin-top: 4px;
-  }
-
-  .member-select {
-    margin-bottom: 24px;
-  }
-
-  .member-select label {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--text-muted);
-    display: block;
-    margin-bottom: 12px;
-  }
-
-  .member-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
-  }
-
-  .member-btn {
-    background: var(--surface2);
-    border: 2px solid transparent;
-    border-radius: 12px;
-    padding: 12px 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    color: var(--text);
-    text-align: center;
-    font-family: 'DM Sans', sans-serif;
-  }
-
-  .member-btn:hover, .member-btn.selected {
-    border-color: var(--accent2);
-    background: rgba(199,125,255,0.12);
-  }
-
-  .member-avatar {
-    font-size: 28px;
-    display: block;
-    margin-bottom: 4px;
-  }
-
-  .member-name {
-    font-size: 11px;
-    font-weight: 500;
-  }
-
-  .input-group {
-    margin-bottom: 16px;
-  }
-
-  .input-group label {
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--text-muted);
-    display: block;
-    margin-bottom: 8px;
-  }
-
-  .input-group input {
-    width: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 14px 16px;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-
-  .input-group input:focus {
-    border-color: var(--accent2);
-  }
-
-  .btn-primary {
-    width: 100%;
-    background: linear-gradient(135deg, var(--accent2), var(--accent));
-    border: none;
-    border-radius: 12px;
-    padding: 16px;
-    color: white;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-    margin-top: 8px;
-  }
-
-  .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(199,125,255,0.4);
-  }
-
-  .error-msg {
-    color: var(--accent);
-    font-size: 13px;
-    text-align: center;
-    margin-top: 12px;
-    display: none;
-  }
-
-  .offline-badge {
-    position: fixed;
-    top: 16px; right: 16px;
-    background: var(--accent);
-    color: white;
-    padding: 6px 14px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    display: none;
-    z-index: 999;
-    animation: slideIn 0.3s ease;
-  }
-
-  @keyframes slideIn {
-    from { opacity: 0; transform: translateX(20px); }
-    to { opacity: 1; transform: translateX(0); }
-  }
-
-  /* ══════════════════════════════
-     MAIN APP
-  ══════════════════════════════ */
-  #appView {
-    flex-direction: column;
-    min-height: 100vh;
-  }
-
-  /* ── HEADER ── */
-  .app-header {
-    position: sticky; top: 0; z-index: 100;
-    background: rgba(13, 10, 30, 0.85);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    height: 64px;
-    display: flex; align-items: center; justify-content: space-between;
-  }
-
-  .header-left {
-    display: flex; align-items: center; gap: 12px;
-  }
-
-  .header-logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    font-weight: 700;
-    background: linear-gradient(135deg, var(--accent2), var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  .user-pill {
-    display: flex; align-items: center; gap: 8px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 6px 12px 6px 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-size: 14px;
-  }
-
-  .user-pill:hover {
-    border-color: var(--accent2);
-  }
-
-  .header-actions {
-    display: flex; align-items: center; gap: 8px;
-  }
-
-  .icon-btn {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    width: 40px; height: 40px;
-    display: flex; align-items: center; justify-content: center;
-    cursor: pointer;
-    font-size: 18px;
-    transition: all 0.2s;
-    color: var(--text);
-  }
-
-  .icon-btn:hover {
-    border-color: var(--accent2);
-    background: rgba(199,125,255,0.1);
-  }
-
-  /* ── TABS ── */
-  .app-tabs {
-    display: flex;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 0 24px;
-    gap: 4px;
-    overflow-x: auto;
-  }
-
-  .tab-btn {
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    padding: 14px 16px;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-    white-space: nowrap;
-    display: flex; align-items: center; gap: 6px;
-  }
-
-  .tab-btn.active {
-    color: var(--accent2);
-    border-bottom-color: var(--accent2);
-  }
-
-  /* ── CONTENT AREA ── */
-  .app-content {
-    flex: 1;
-    padding: 24px;
-    max-width: 1200px;
-    margin: 0 auto;
-    width: 100%;
-  }
-
-  /* ── SECTION HEADER ── */
-  .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 24px;
-  }
-
-  .section-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 26px;
-    font-weight: 700;
-  }
-
-  /* ── UPLOAD ZONE ── */
-  .upload-zone {
-    border: 2px dashed rgba(199,125,255,0.3);
-    border-radius: var(--radius);
-    padding: 40px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s;
-    margin-bottom: 28px;
-    background: rgba(199,125,255,0.03);
-    position: relative;
-  }
-
-  .upload-zone:hover, .upload-zone.drag-over {
-    border-color: var(--accent2);
-    background: rgba(199,125,255,0.08);
-  }
-
-  .upload-zone input[type="file"] {
-    position: absolute; inset: 0;
-    opacity: 0; cursor: pointer;
-    width: 100%; height: 100%;
-  }
-
-  .upload-icon { font-size: 48px; margin-bottom: 12px; }
-  .upload-zone h3 { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
-  .upload-zone p { color: var(--text-muted); font-size: 14px; }
-
-  /* ── ALBUM GRID ── */
-  .albums-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 16px;
-    margin-bottom: 28px;
-  }
-
-  .album-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.3s;
-    position: relative;
-    group: true;
-  }
-
-  .album-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 16px 40px rgba(0,0,0,0.4);
-    border-color: var(--accent2);
-  }
-
-  .album-thumb {
-    height: 160px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 60px;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .album-thumb img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    position: absolute; inset: 0;
-  }
-
-  .album-gradient {
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 60%;
-    background: linear-gradient(transparent, rgba(0,0,0,0.7));
-  }
-
-  .album-info {
-    padding: 14px;
-  }
-
-  .album-name {
-    font-weight: 600;
-    font-size: 15px;
-    margin-bottom: 4px;
-  }
-
-  .album-count {
-    font-size: 12px;
-    color: var(--text-muted);
-  }
-
-  /* ── PHOTO GRID ── */
-  .photos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 12px;
-  }
-
-  .photo-item {
-    aspect-ratio: 1;
-    background: var(--surface);
-    border-radius: 12px;
-    overflow: hidden;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-    border: 1px solid var(--border);
-  }
-
-  .photo-item:hover {
-    transform: scale(1.03);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  }
-
-  .photo-item img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
-  .photo-overlay {
-    position: absolute; inset: 0;
-    background: rgba(0,0,0,0.6);
-    display: flex;
-    align-items: center; justify-content: center;
-    gap: 12px;
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-
-  .photo-item:hover .photo-overlay { opacity: 1; }
-
-  .photo-action {
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(8px);
-    border: none;
-    border-radius: 8px;
-    width: 40px; height: 40px;
-    color: white;
-    font-size: 18px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    transition: background 0.2s;
-  }
-
-  .photo-action:hover { background: rgba(255,255,255,0.3); }
-
-  .photo-label {
-    position: absolute;
-    bottom: 8px; left: 8px;
-    font-size: 11px;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(4px);
-    padding: 3px 8px;
-    border-radius: 4px;
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-
-  .photo-item:hover .photo-label { opacity: 1; }
-
-  /* ── LIGHTBOX ── */
-  .lightbox {
-    position: fixed; inset: 0; z-index: 1000;
-    background: rgba(0,0,0,0.95);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    animation: fadeIn 0.2s;
-  }
-
-  .lightbox.open { display: flex; }
-
-  @keyframes fadeIn {
-    from { opacity: 0; } to { opacity: 1; }
-  }
-
-  .lightbox-img {
-    max-width: 90vw;
-    max-height: 85vh;
-    border-radius: 12px;
-    object-fit: contain;
-    box-shadow: 0 0 60px rgba(0,0,0,0.8);
-  }
-
-  .lightbox-close {
-    position: fixed; top: 20px; right: 20px;
-    background: rgba(255,255,255,0.1);
-    border: none;
-    border-radius: 50%;
-    width: 44px; height: 44px;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-  }
-
-  .lightbox-actions {
-    position: fixed;
-    bottom: 30px; left: 50%;
-    transform: translateX(-50%);
-    display: flex; gap: 12px;
-  }
-
-  .lightbox-btn {
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(8px);
-    border: 1px solid rgba(255,255,255,0.2);
-    border-radius: 12px;
-    padding: 10px 20px;
-    color: white;
-    cursor: pointer;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    display: flex; align-items: center; gap: 8px;
-    transition: all 0.2s;
-  }
-
-  .lightbox-btn:hover {
-    background: rgba(255,255,255,0.2);
-  }
-
-  .lightbox-btn.download-btn {
-    background: linear-gradient(135deg, var(--accent2), var(--accent));
-    border-color: transparent;
-  }
-
-  /* ── MEMBERS SECTION ── */
-  .members-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 16px;
-  }
-
-  .member-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 28px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-
-  .member-card:hover {
-    border-color: var(--accent2);
-    transform: translateY(-4px);
-    box-shadow: 0 12px 32px rgba(199,125,255,0.2);
-  }
-
-  .member-card-avatar {
-    font-size: 52px;
-    margin-bottom: 12px;
-    display: block;
-  }
-
-  .member-card-name {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 4px;
-  }
-
-  .member-card-role {
-    font-size: 12px;
-    color: var(--text-muted);
-  }
-
-  .member-card-count {
-    margin-top: 12px;
-    font-size: 13px;
-    color: var(--accent2);
-    font-weight: 500;
-  }
-
-  /* ── MEMORIES ── */
-  .memory-timeline {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .memory-entry {
-    display: flex;
-    gap: 16px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 20px;
-    transition: all 0.2s;
-  }
-
-  .memory-entry:hover {
-    border-color: rgba(199,125,255,0.4);
-  }
-
-  .memory-date {
-    flex-shrink: 0;
-    width: 56px;
-    text-align: center;
-  }
-
-  .memory-day {
-    font-size: 28px;
-    font-weight: 700;
-    font-family: 'Playfair Display', serif;
-    color: var(--accent2);
-    line-height: 1;
-  }
-
-  .memory-month {
-    font-size: 11px;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    letter-spacing: 1px;
-  }
-
-  .memory-content { flex: 1; }
-
-  .memory-title {
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 6px;
-  }
-
-  .memory-desc {
-    font-size: 14px;
-    color: var(--text-muted);
-    line-height: 1.6;
-  }
-
-  .memory-photos {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-    flex-wrap: wrap;
-  }
-
-  .memory-thumb {
-    width: 70px; height: 70px;
-    border-radius: 8px;
-    background: var(--surface2);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px;
-    cursor: pointer;
-    overflow: hidden;
-    border: 1px solid var(--border);
-  }
-
-  .memory-thumb img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-  }
-
-  /* ── ADD ALBUM MODAL ── */
-  .modal-overlay {
-    position: fixed; inset: 0; z-index: 200;
-    background: rgba(0,0,0,0.7);
-    backdrop-filter: blur(8px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-  }
-
-  .modal-overlay.open { display: flex; }
-
-  .modal-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 32px;
-    width: 100%;
-    max-width: 440px;
-    box-shadow: var(--shadow);
-    animation: slideUp 0.3s cubic-bezier(0.16,1,0.3,1);
-  }
-
-  .modal-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 24px;
-  }
-
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background: rgba(199,125,255,0.15);
-    border: 1px solid rgba(199,125,255,0.3);
-    color: var(--accent2);
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
-  }
-
-  .offline-banner {
-    background: rgba(255,107,157,0.1);
-    border: 1px solid rgba(255,107,157,0.3);
-    border-radius: 12px;
-    padding: 14px 16px;
-    font-size: 13px;
-    color: var(--accent);
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .storage-bar {
-    background: var(--surface2);
-    border-radius: 4px;
-    height: 6px;
-    overflow: hidden;
-    margin-top: 8px;
-  }
-
-  .storage-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent2), var(--accent));
-    border-radius: 4px;
-    width: 34%;
-  }
-
-  .storage-info {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    color: var(--text-muted);
-    margin-top: 6px;
-  }
-
-  .btn-sm {
-    background: linear-gradient(135deg, var(--accent2), var(--accent));
-    border: none;
-    border-radius: 10px;
-    padding: 10px 18px;
-    color: white;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .btn-sm:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 16px rgba(199,125,255,0.4);
-  }
-
-  .btn-ghost {
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 18px;
-    color: var(--text-muted);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .btn-ghost:hover {
-    border-color: var(--accent2);
-    color: var(--text);
-  }
-
-  /* ── BACK BUTTON ── */
-  .back-btn {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 8px 16px;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex; align-items: center; gap: 6px;
-    margin-bottom: 20px;
-    transition: all 0.2s;
-  }
-
-  .back-btn:hover { border-color: var(--accent2); }
-
-  /* Empty state */
-  .empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: var(--text-muted);
-  }
-  .empty-state .es-icon { font-size: 52px; margin-bottom: 16px; }
-  .empty-state h3 { font-size: 18px; color: var(--text); margin-bottom: 8px; }
-  .empty-state p { font-size: 14px; line-height: 1.6; }
-
-  /* ── TAB PANELS ── */
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
-
-  /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 24px; right: 24px;
-    background: var(--surface);
-    border: 1px solid rgba(199,125,255,0.4);
-    border-radius: 12px;
-    padding: 14px 20px;
-    font-size: 14px;
-    z-index: 999;
-    box-shadow: var(--shadow);
-    transform: translateY(80px);
-    opacity: 0;
-    transition: all 0.3s;
-    max-width: 300px;
-  }
-
-  .toast.show {
-    transform: translateY(0);
-    opacity: 1;
-  }
-
-  /* Scrollbar */
-  ::-webkit-scrollbar { width: 6px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--surface2); border-radius: 3px; }
-
-  @media (max-width: 600px) {
-    .login-card { padding: 32px 24px; }
-    .member-grid { grid-template-columns: repeat(3, 1fr); }
-    .albums-grid { grid-template-columns: repeat(2, 1fr); }
-    .photos-grid { grid-template-columns: repeat(2, 1fr); }
-    .app-content { padding: 16px; }
-  }
+:root {
+  --bg:#060e08;--bg2:#0b1a0f;--surface:#0f2214;--surface2:#152b1a;--surface3:#1a3320;
+  --border:rgba(212,175,55,0.15);--border2:rgba(212,175,55,0.3);
+  --gold:#d4af37;--gold-lt:#f0d060;--gold-dk:#a8860a;
+  --emerald:#2ecc71;--emerald-dk:#1a8a4a;
+  --text:#f5ede0;--text-muted:#8a9e8d;--red:#e05555;
+  --radius:14px;--shadow:0 12px 48px rgba(0,0,0,0.6);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 50% at 15% 20%,rgba(46,204,113,0.07) 0%,transparent 60%),
+  radial-gradient(ellipse 60% 70% at 85% 75%,rgba(212,175,55,0.06) 0%,transparent 60%);}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:repeating-linear-gradient(45deg,rgba(212,175,55,0.02) 0px,rgba(212,175,55,0.02) 1px,transparent 1px,transparent 40px),
+  repeating-linear-gradient(-45deg,rgba(212,175,55,0.02) 0px,rgba(212,175,55,0.02) 1px,transparent 1px,transparent 40px);}
+.view{display:none;position:relative;z-index:1;}
+.view.active{display:flex;}
+
+/* ── MEMBER SELECT ── */
+#memberView{min-height:100vh;align-items:center;justify-content:center;flex-direction:column;padding:24px;}
+.welcome-header{text-align:center;margin-bottom:48px;animation:fadeDown 0.8s cubic-bezier(0.16,1,0.3,1) both;}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-20px);}to{opacity:1;transform:translateY(0);}}
+.brand-emblem{width:100px;height:100px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;font-size:44px;margin:0 auto 20px;background:radial-gradient(circle,rgba(212,175,55,0.1) 0%,transparent 70%);box-shadow:0 0 50px rgba(212,175,55,0.15),inset 0 0 30px rgba(212,175,55,0.05);animation:glowPulse 4s ease-in-out infinite;}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 50px rgba(212,175,55,0.15);}50%{box-shadow:0 0 80px rgba(212,175,55,0.3);}}
+.brand-title{font-family:'Cormorant Garamond',serif;font-size:40px;font-weight:700;color:var(--gold);letter-spacing:3px;text-shadow:0 0 40px rgba(212,175,55,0.3);}
+.brand-urdu{font-size:22px;color:rgba(212,175,55,0.7);margin-top:4px;letter-spacing:2px;}
+.brand-sub{font-size:11px;color:var(--text-muted);letter-spacing:3px;text-transform:uppercase;margin-top:8px;}
+.divider-line{display:flex;align-items:center;gap:12px;margin:14px auto 0;width:fit-content;}
+.divider-line::before,.divider-line::after{content:'';width:50px;height:1px;background:linear-gradient(90deg,transparent,var(--gold));}
+.divider-line::after{background:linear-gradient(90deg,var(--gold),transparent);}
+.divider-line span{color:var(--gold);font-size:14px;}
+.member-prompt{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:2.5px;color:var(--text-muted);text-align:center;margin-bottom:22px;animation:fadeDown 0.8s 0.2s both;}
+.members-select-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;width:100%;max-width:380px;animation:fadeDown 0.8s 0.3s both;}
+.member-select-card{background:linear-gradient(145deg,var(--surface),var(--surface2));border:1px solid var(--border);border-radius:18px;padding:26px 16px;cursor:pointer;transition:all 0.3s cubic-bezier(0.16,1,0.3,1);text-align:center;position:relative;overflow:hidden;}
+.member-select-card::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(212,175,55,0.05),rgba(46,204,113,0.05));opacity:0;transition:opacity 0.3s;}
+.member-select-card:hover{border-color:var(--border2);transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,0.5),0 0 25px rgba(212,175,55,0.1);}
+.member-select-card:hover::after{opacity:1;}
+.member-select-card:active{transform:scale(0.96);}
+.msc-wrap{width:68px;height:68px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:32px;position:relative;}
+.msc-ring{position:absolute;inset:-3px;border-radius:50%;border:1.5px solid rgba(212,175,55,0.5);}
+.msc-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--gold-lt);margin-bottom:2px;}
+.msc-urdu{font-size:14px;color:rgba(212,175,55,0.5);margin-bottom:2px;}
+.msc-role{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.5px;}
+.bismillah{text-align:center;margin-top:36px;font-size:12px;color:rgba(212,175,55,0.25);letter-spacing:3px;animation:fadeDown 0.8s 0.6s both;}
+
+/* ── PASSWORD ── */
+#passwordView{min-height:100vh;align-items:center;justify-content:center;flex-direction:column;padding:24px;}
+.pw-card{background:linear-gradient(145deg,var(--surface),var(--surface2));border:1px solid var(--border);border-radius:24px;padding:44px 36px;width:100%;max-width:400px;box-shadow:var(--shadow),0 0 60px rgba(212,175,55,0.05);animation:slideUp 0.5s cubic-bezier(0.16,1,0.3,1);}
+@keyframes slideUp{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+.pw-back{display:flex;align-items:center;gap:8px;background:none;border:1px solid var(--border);border-radius:10px;padding:9px 16px;color:var(--text-muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;cursor:pointer;transition:all 0.2s;margin-bottom:28px;}
+.pw-back:hover{border-color:var(--border2);color:var(--gold);}
+.pw-user{text-align:center;margin-bottom:30px;}
+.pw-avatar{width:82px;height:82px;border-radius:50%;margin:0 auto 14px;display:flex;align-items:center;justify-content:center;font-size:38px;background:linear-gradient(135deg,var(--surface3),var(--surface2));border:2px solid var(--border2);box-shadow:0 0 30px rgba(212,175,55,0.12);}
+.pw-name{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--gold);}
+.pw-greet{font-size:13px;color:var(--text-muted);margin-top:4px;}
+.pw-dots{display:flex;gap:9px;justify-content:center;margin-bottom:22px;}
+.pw-dot{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--border2);background:transparent;transition:all 0.2s;}
+.pw-dot.filled{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px rgba(212,175,55,0.5);}
+.pw-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:2px;color:var(--text-muted);display:block;margin-bottom:8px;}
+.pw-wrap{position:relative;margin-bottom:20px;}
+.pw-inp{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:15px 48px 15px 16px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:16px;outline:none;transition:border-color 0.2s,box-shadow 0.2s;letter-spacing:4px;}
+.pw-inp:focus{border-color:var(--border2);box-shadow:0 0 0 3px rgba(212,175,55,0.08);}
+.pw-eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--text-muted);cursor:pointer;font-size:18px;transition:color 0.2s;}
+.pw-eye:hover{color:var(--gold);}
+.btn-enter{width:100%;background:linear-gradient(135deg,var(--gold-dk),var(--gold));border:none;border-radius:12px;padding:16px;color:#060e08;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;letter-spacing:0.5px;position:relative;overflow:hidden;}
+.btn-enter:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(212,175,55,0.35);}
+.btn-enter:active{transform:scale(0.98);}
+.pw-err{text-align:center;font-size:13px;color:var(--red);margin-top:12px;display:none;}
+.pw-att{text-align:center;font-size:11px;color:var(--text-muted);margin-top:8px;display:none;}
+@keyframes shake{0%,100%{transform:translateX(0);}20%,60%{transform:translateX(-7px);}40%,80%{transform:translateX(7px);}}
+.shake{animation:shake 0.4s !important;}
+
+/* ── LOCKOUT ── */
+#lockoutView{min-height:100vh;align-items:center;justify-content:center;flex-direction:column;padding:24px;text-align:center;gap:16px;}
+.lo-icon{font-size:72px;}.lo-title{font-family:'Cormorant Garamond',serif;font-size:30px;color:var(--red);}
+.lo-msg{font-size:14px;color:var(--text-muted);max-width:300px;line-height:1.6;}
+.lo-timer{font-size:40px;font-weight:700;color:var(--gold);font-family:'Cormorant Garamond',serif;}
+
+/* ── APP ── */
+#appView{flex-direction:column;min-height:100vh;}
+.app-header{position:sticky;top:0;z-index:100;background:rgba(6,14,8,0.93);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 20px;height:62px;display:flex;align-items:center;justify-content:space-between;}
+.header-brand{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--gold);letter-spacing:1px;}
+.header-right{display:flex;align-items:center;gap:10px;}
+.user-chip{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px 6px 10px;font-size:13px;}
+.u-dot{width:7px;height:7px;border-radius:50%;background:var(--emerald);box-shadow:0 0 6px var(--emerald);}
+.icon-btn{background:var(--surface);border:1px solid var(--border);border-radius:10px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--text);transition:all 0.2s;}
+.icon-btn:hover{border-color:var(--border2);color:var(--gold);}
+.app-tabs{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.app-tabs::-webkit-scrollbar{display:none;}
+.tab-btn{background:none;border:none;color:var(--text-muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:500;padding:13px 15px;cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s;white-space:nowrap;display:flex;align-items:center;gap:5px;}
+.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
+.tab-btn:hover:not(.active){color:var(--text);}
+.app-content{flex:1;padding:24px;max-width:1100px;margin:0 auto;width:100%;}
+.sec-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:700;color:var(--gold-lt);}
+.sec-title small{display:block;font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;font-weight:400;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:2px;}
+.back-btn{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:9px 16px;color:var(--text-muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;cursor:pointer;transition:all 0.2s;margin-bottom:20px;}
+.back-btn:hover{border-color:var(--border2);color:var(--gold);}
+.upload-zone{border:1.5px dashed rgba(212,175,55,0.22);border-radius:var(--radius);padding:36px;text-align:center;cursor:pointer;transition:all 0.3s;margin-bottom:26px;background:rgba(212,175,55,0.02);position:relative;}
+.upload-zone:hover,.upload-zone.drag-over{border-color:var(--gold);background:rgba(212,175,55,0.05);}
+.upload-zone input[type="file"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;}
+.upload-icon{font-size:36px;margin-bottom:10px;color:var(--gold);}
+.upload-zone h3{font-size:15px;font-weight:600;margin-bottom:4px;}
+.upload-zone p{color:var(--text-muted);font-size:12px;}
+.albums-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:16px;}
+.album-card{background:linear-gradient(145deg,var(--surface),var(--surface2));border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:all 0.3s;}
+.album-card:hover{transform:translateY(-5px);box-shadow:0 16px 40px rgba(0,0,0,0.5),0 0 20px rgba(212,175,55,0.07);border-color:var(--border2);}
+.album-thumb{height:148px;display:flex;align-items:center;justify-content:center;font-size:50px;position:relative;overflow:hidden;background:var(--surface3);}
+.album-thumb img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;}
+.album-grd{position:absolute;bottom:0;left:0;right:0;height:50%;background:linear-gradient(transparent,rgba(0,0,0,0.6));}
+.album-info{padding:14px;}
+.album-name{font-weight:600;font-size:14px;margin-bottom:4px;}
+.album-meta{font-size:11px;color:var(--text-muted);display:flex;justify-content:space-between;}
+.photos-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;}
+.photo-item{aspect-ratio:1;background:var(--surface2);border-radius:12px;overflow:hidden;cursor:pointer;transition:all 0.2s;position:relative;border:1px solid var(--border);}
+.photo-item:hover{transform:scale(1.04);box-shadow:0 8px 24px rgba(0,0,0,0.5);border-color:var(--border2);}
+.photo-item img{width:100%;height:100%;object-fit:cover;display:block;}
+.photo-overlay{position:absolute;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;gap:10px;opacity:0;transition:opacity 0.2s;}
+.photo-item:hover .photo-overlay{opacity:1;}
+.ph-act{background:rgba(255,255,255,0.1);backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.2);border-radius:8px;width:38px;height:38px;color:white;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;}
+.ph-act:hover{background:rgba(255,255,255,0.25);}
+.ph-label{position:absolute;bottom:6px;left:6px;font-size:10px;background:rgba(0,0,0,0.75);padding:2px 7px;border-radius:4px;opacity:0;transition:opacity 0.2s;}
+.photo-item:hover .ph-label{opacity:1;}
+.lightbox{position:fixed;inset:0;z-index:1000;background:rgba(0,0,0,0.97);display:none;align-items:center;justify-content:center;animation:fadeIn 0.2s;}
+.lightbox.open{display:flex;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.lb-img{max-width:90vw;max-height:85vh;border-radius:10px;object-fit:contain;box-shadow:0 0 80px rgba(0,0,0,0.9);}
+.lb-close{position:fixed;top:18px;right:18px;background:rgba(255,255,255,0.08);border:none;border-radius:50%;width:44px;height:44px;color:white;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;}
+.lb-close:hover{background:rgba(255,255,255,0.18);}
+.lb-nav{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);display:flex;gap:10px;}
+.lb-btn{background:rgba(255,255,255,0.08);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.15);border-radius:12px;padding:10px 18px;color:white;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:500;display:flex;align-items:center;gap:6px;transition:all 0.2s;}
+.lb-btn:hover{background:rgba(255,255,255,0.16);}
+.lb-dl{background:linear-gradient(135deg,var(--gold-dk),var(--gold));border-color:transparent;color:#060e08;font-weight:700;}
+.lb-dl:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(212,175,55,0.4);}
+.memory-timeline{display:flex;flex-direction:column;gap:16px;}
+.memory-card{background:linear-gradient(145deg,var(--surface),var(--surface2));border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;gap:16px;transition:border-color 0.2s;}
+.memory-card:hover{border-color:var(--border2);}
+.mem-date{flex-shrink:0;text-align:center;width:50px;}
+.mem-day{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:700;color:var(--gold);line-height:1;}
+.mem-month{font-size:10px;text-transform:uppercase;color:var(--text-muted);letter-spacing:1px;}
+.mem-body{flex:1;}
+.mem-title{font-size:15px;font-weight:600;margin-bottom:4px;}
+.mem-desc{font-size:13px;color:var(--text-muted);line-height:1.6;}
+.members-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;}
+.member-card{background:linear-gradient(145deg,var(--surface),var(--surface2));border:1px solid var(--border);border-radius:var(--radius);padding:28px 20px;text-align:center;transition:all 0.3s;}
+.member-card:hover{border-color:var(--border2);transform:translateY(-4px);box-shadow:0 12px 30px rgba(0,0,0,0.4);}
+.mc-avatar{font-size:48px;margin-bottom:12px;display:block;}
+.mc-name{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:600;color:var(--gold-lt);margin-bottom:2px;}
+.mc-urdu{font-size:16px;color:rgba(212,175,55,0.5);margin-bottom:4px;}
+.mc-role{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;}
+.mc-cnt{margin-top:10px;font-size:12px;color:var(--emerald);}
+.settings-card{background:linear-gradient(145deg,var(--surface),var(--surface2));border:1px solid var(--border);border-radius:var(--radius);padding:22px;margin-bottom:14px;}
+.settings-card h3{font-size:15px;font-weight:600;margin-bottom:12px;color:var(--gold-lt);}
+.modal-overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.8);backdrop-filter:blur(10px);display:none;align-items:center;justify-content:center;padding:24px;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:linear-gradient(145deg,var(--surface),var(--surface2));border:1px solid var(--border);border-radius:20px;padding:32px;width:100%;max-width:420px;box-shadow:var(--shadow);animation:slideUp 0.3s cubic-bezier(0.16,1,0.3,1);}
+.modal-title{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:700;color:var(--gold);margin-bottom:22px;}
+.inp-group{margin-bottom:15px;}
+.inp-group label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-muted);display:block;margin-bottom:7px;}
+.inp-group input{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:13px 15px;color:var(--text);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
+.inp-group input:focus{border-color:var(--border2);box-shadow:0 0 0 3px rgba(212,175,55,0.08);}
+.btn-gold{background:linear-gradient(135deg,var(--gold-dk),var(--gold));border:none;border-radius:10px;padding:12px 20px;color:#060e08;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-gold:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(212,175,55,0.35);}
+.btn-ghost{background:transparent;border:1px solid var(--border);border-radius:10px;padding:12px 20px;color:var(--text-muted);font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;cursor:pointer;transition:all 0.2s;}
+.btn-ghost:hover{border-color:var(--border2);color:var(--text);}
+.badge{display:inline-flex;align-items:center;gap:4px;background:rgba(46,204,113,0.12);border:1px solid rgba(46,204,113,0.3);color:var(--emerald);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;}
+.storage-bar{background:var(--bg);border-radius:4px;height:5px;overflow:hidden;margin-top:8px;}
+.storage-fill{height:100%;background:linear-gradient(90deg,var(--emerald-dk),var(--gold));border-radius:4px;width:5%;transition:width 0.5s;}
+.storage-info{display:flex;justify-content:space-between;font-size:11px;color:var(--text-muted);margin-top:6px;}
+.empty-state{text-align:center;padding:50px 20px;color:var(--text-muted);grid-column:1/-1;}
+.empty-state .es-icon{font-size:48px;margin-bottom:14px;}
+.empty-state h3{font-size:17px;color:var(--text);margin-bottom:6px;}
+.empty-state p{font-size:13px;line-height:1.6;}
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid var(--border2);border-radius:12px;padding:14px 20px;font-size:13px;z-index:999;box-shadow:var(--shadow);transform:translateY(80px);opacity:0;transition:all 0.35s cubic-bezier(0.16,1,0.3,1);max-width:280px;}
+.toast.show{transform:translateY(0);opacity:1;}
+.offline-badge{position:fixed;top:14px;right:14px;background:linear-gradient(135deg,#c0392b,#e74c3c);color:white;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:700;display:none;z-index:999;}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:var(--surface3);border-radius:3px;}
+@media(max-width:480px){.members-select-grid{grid-template-columns:repeat(2,1fr);}.albums-grid{grid-template-columns:repeat(2,1fr);}.photos-grid{grid-template-columns:repeat(2,1fr);}.app-content{padding:16px;}.brand-title{font-size:32px;}.pw-card{padding:32px 20px;}}
 </style>
 </head>
 <body>
-
-<!-- Offline Badge -->
-<div class="offline-badge" id="offlineBadge">📡 Offline Mode</div>
-
-<!-- Toast -->
+<div class="offline-badge" id="offlineBadge">📡 Offline</div>
 <div class="toast" id="toast"></div>
 
-<!-- ══════════ LOGIN VIEW ══════════ -->
-<div class="view active" id="loginView">
-  <div class="login-card">
-    <div class="login-logo">
-      <div class="logo-icon">🏠</div>
-      <h1>FamilyCloud</h1>
-      <p>परिवार की हर याद — सुरक्षित, हमेशा के लिए</p>
+<!-- ══ STEP 1: MEMBER SELECT ══ -->
+<div class="view active" id="memberView">
+  <div style="width:100%;display:flex;flex-direction:column;align-items:center;padding:40px 24px 60px;">
+    <div class="welcome-header">
+      <div class="brand-emblem">🏡</div>
+      <div class="brand-title">Hamara Ghar</div>
+      <div class="brand-urdu">ہمارا گھر</div>
+      <div class="brand-sub">Private Family Cloud</div>
+      <div class="divider-line"><span>✦</span></div>
     </div>
 
-    <div class="member-select">
-      <label>👥 परिवार का सदस्य चुनें</label>
-      <div class="member-grid" id="memberGrid">
-        <button class="member-btn" onclick="selectMember(this,'Papa','👨')" data-name="Papa">
-          <span class="member-avatar">👨</span>
-          <span class="member-name">Papa</span>
-        </button>
-        <button class="member-btn" onclick="selectMember(this,'Mama','👩')" data-name="Mama">
-          <span class="member-avatar">👩</span>
-          <span class="member-name">Mama</span>
-        </button>
-        <button class="member-btn" onclick="selectMember(this,'Bhaiya','👦')" data-name="Bhaiya">
-          <span class="member-avatar">👦</span>
-          <span class="member-name">Bhaiya</span>
-        </button>
-        <button class="member-btn" onclick="selectMember(this,'Didi','👧')" data-name="Didi">
-          <span class="member-avatar">👧</span>
-          <span class="member-name">Didi</span>
-        </button>
-        <button class="member-btn" onclick="selectMember(this,'Dada','👴')" data-name="Dada">
-          <span class="member-avatar">👴</span>
-          <span class="member-name">Dada</span>
-        </button>
-        <button class="member-btn" onclick="selectMember(this,'Dadi','👵')" data-name="Dadi">
-          <span class="member-avatar">👵</span>
-          <span class="member-name">Dadi</span>
-        </button>
+    <div class="member-prompt">Apna naam chunein — اپنا نام چنیں</div>
+
+    <div class="members-select-grid">
+      <div class="member-select-card" onclick="selectMemberStep('kausar')">
+        <div class="msc-wrap" style="background:linear-gradient(135deg,#1a3a2a,#0f2214);">
+          <div class="msc-ring"></div>🌸
+        </div>
+        <div class="msc-name">Kausar</div>
+        <div class="msc-urdu">کوثر</div>
+        <div class="msc-role">Family Member</div>
+      </div>
+      <div class="member-select-card" onclick="selectMemberStep('naziya')">
+        <div class="msc-wrap" style="background:linear-gradient(135deg,#2a1a3a,#1a0f2e);">
+          <div class="msc-ring"></div>🌹
+        </div>
+        <div class="msc-name">Naziya</div>
+        <div class="msc-urdu">نازیہ</div>
+        <div class="msc-role">Family Member</div>
+      </div>
+      <div class="member-select-card" onclick="selectMemberStep('nilofar')">
+        <div class="msc-wrap" style="background:linear-gradient(135deg,#1a2a3a,#0f1a2e);">
+          <div class="msc-ring"></div>🌺
+        </div>
+        <div class="msc-name">Nilofar</div>
+        <div class="msc-urdu">نیلوفر</div>
+        <div class="msc-role">Family Member</div>
+      </div>
+      <div class="member-select-card" onclick="selectMemberStep('vaseem')">
+        <div class="msc-wrap" style="background:linear-gradient(135deg,#2a2a1a,#1a1a0f);">
+          <div class="msc-ring"></div>🌿
+        </div>
+        <div class="msc-name">Vaseem</div>
+        <div class="msc-urdu">وسیم</div>
+        <div class="msc-role">Family Member</div>
       </div>
     </div>
-
-    <div class="input-group">
-      <label>🔑 Family Password</label>
-      <input type="password" id="pwInput" placeholder="Family secret password डालें..." />
-    </div>
-
-    <button class="btn-primary" onclick="doLogin()">✨ प्रवेश करें</button>
-    <p class="error-msg" id="errMsg">❌ गलत password! दुबारा कोशिश करें।</p>
-
-    <p style="text-align:center; font-size:12px; color:var(--text-muted); margin-top:20px;">
-      Demo password: <strong style="color:var(--accent2)">family123</strong>
-    </p>
+    <div class="bismillah">✦ ﷽ ✦ — Sirf Hamare Ghar Ke Liye</div>
   </div>
 </div>
 
-<!-- ══════════ APP VIEW ══════════ -->
-<div class="view" id="appView">
-
-  <!-- Header -->
-  <header class="app-header">
-    <div class="header-left">
-      <span class="header-logo">🏠 FamilyCloud</span>
+<!-- ══ STEP 2: PASSWORD ══ -->
+<div class="view" id="passwordView">
+  <div style="width:100%;display:flex;align-items:center;justify-content:center;padding:24px;min-height:100vh;">
+    <div class="pw-card" id="pwCard">
+      <button class="pw-back" onclick="goBackToMembers()">← Wapas Jao</button>
+      <div class="pw-user">
+        <div class="pw-avatar"><span id="pwEmoji">🌸</span></div>
+        <div class="pw-name" id="pwName">Kausar</div>
+        <div class="pw-greet">Assalamu Alaikum 🤲 Password enter karein</div>
+      </div>
+      <div class="pw-dots">
+        <div class="pw-dot" id="d0"></div><div class="pw-dot" id="d1"></div>
+        <div class="pw-dot" id="d2"></div><div class="pw-dot" id="d3"></div>
+        <div class="pw-dot" id="d4"></div><div class="pw-dot" id="d5"></div>
+        <div class="pw-dot" id="d6"></div><div class="pw-dot" id="d7"></div>
+      </div>
+      <span class="pw-label">Family Password</span>
+      <div class="pw-wrap">
+        <input class="pw-inp" type="password" id="pwInput" placeholder="••••••••"
+          oninput="updateDots()" onkeydown="if(event.key==='Enter')doLogin()">
+        <button class="pw-eye" id="pwEyeBtn" onclick="togglePwVis()">👁️</button>
+      </div>
+      <button class="btn-enter" onclick="doLogin()">✦ Ghar Mein Pravesh Karein</button>
+      <p class="pw-err" id="pwErr">❌ Galat password! Dobara koshish karein.</p>
+      <p class="pw-att" id="pwAtt"></p>
     </div>
-    <div class="header-actions">
-      <span class="badge" id="userBadge">👤 User</span>
-      <button class="icon-btn" onclick="openAddAlbum()" title="Album बनाएं">➕</button>
+  </div>
+</div>
+
+<!-- ══ LOCKOUT ══ -->
+<div class="view" id="lockoutView">
+  <div class="lo-icon">🔒</div>
+  <div class="lo-title">Account Temporarily Locked</div>
+  <div class="lo-msg">Zyada baar galat password dala gaya. Kuch der baad dobara koshish karein.</div>
+  <div class="lo-timer" id="loTimer">05:00</div>
+  <button class="btn-ghost" onclick="tryUnlock()" style="margin-top:8px;">🔄 Check Again</button>
+</div>
+
+<!-- ══ MAIN APP ══ -->
+<div class="view" id="appView">
+  <header class="app-header">
+    <div class="header-brand">🏡 Hamara Ghar</div>
+    <div class="header-right">
+      <div class="user-chip"><div class="u-dot"></div><span id="userChipTxt">—</span></div>
       <button class="icon-btn" onclick="doLogout()" title="Logout">🚪</button>
     </div>
   </header>
-
-  <!-- Tabs -->
   <nav class="app-tabs">
     <button class="tab-btn active" onclick="switchTab('albums',this)">🖼️ Albums</button>
     <button class="tab-btn" onclick="switchTab('photos',this)">📷 Photos</button>
-    <button class="tab-btn" onclick="switchTab('memories',this)">💝 Memories</button>
-    <button class="tab-btn" onclick="switchTab('members',this)">👨‍👩‍👧‍👦 Members</button>
+    <button class="tab-btn" onclick="switchTab('memories',this)">💝 Yaadein</button>
+    <button class="tab-btn" onclick="switchTab('members',this)">👨‍👩‍👧‍👦 Family</button>
     <button class="tab-btn" onclick="switchTab('settings',this)">⚙️ Settings</button>
   </nav>
-
-  <!-- Content -->
   <div class="app-content">
 
-    <!-- ── ALBUMS TAB ── -->
+    <!-- ALBUMS -->
     <div class="tab-panel active" id="tab-albums">
       <div id="albumListView">
-        <div class="section-header">
-          <h2 class="section-title">Photo Albums</h2>
-          <button class="btn-sm" onclick="openAddAlbum()">+ New Album</button>
+        <div class="sec-header">
+          <div class="sec-title"><small>Photo Albums</small>Hamari Gallery</div>
+          <button class="btn-gold" onclick="openModal('addAlbumModal')">+ New Album</button>
         </div>
-
-        <!-- Upload Zone -->
         <div class="upload-zone" id="mainUploadZone">
           <input type="file" multiple accept="image/*,video/*" id="mainFileInput" onchange="handleFiles(this.files)">
-          <div class="upload-icon">📁</div>
-          <h3>Photos यहाँ Drop करें</h3>
-          <p>या click करके select करें • JPG, PNG, MP4 supported</p>
+          <div class="upload-icon">✦</div>
+          <h3>Photos Yahan Drop Karein</h3>
+          <p>Ya click karein — JPG, PNG, MP4 supported</p>
         </div>
-
         <div class="albums-grid" id="albumsGrid"></div>
       </div>
-
-      <!-- Album Detail View -->
       <div id="albumDetailView" style="display:none;">
-        <button class="back-btn" onclick="showAlbumList()">← Albums पर वापस जाएं</button>
-        <div class="section-header">
-          <h2 class="section-title" id="albumDetailTitle">Album</h2>
-          <button class="btn-sm" id="downloadAlbumBtn">⬇ Download All</button>
+        <button class="back-btn" onclick="showAlbumList()">← Albums Par Wapas</button>
+        <div class="sec-header">
+          <div class="sec-title" id="albDetailTitle"><small>Album</small></div>
+          <button class="btn-gold" id="dlAlbumBtn">⬇ Download All</button>
         </div>
         <div class="photos-grid" id="albumPhotosGrid"></div>
       </div>
     </div>
 
-    <!-- ── PHOTOS TAB ── -->
+    <!-- PHOTOS -->
     <div class="tab-panel" id="tab-photos">
-      <div class="section-header">
-        <h2 class="section-title">All Photos</h2>
+      <div class="sec-header">
+        <div class="sec-title"><small>All Photos</small>Saari Tasveeren</div>
         <div style="display:flex;gap:8px;">
-          <button class="btn-ghost" onclick="sortPhotos()">🔀 Sort</button>
-          <button class="btn-sm" onclick="document.getElementById('mainFileInput2').click()">+ Add Photos</button>
-          <input type="file" id="mainFileInput2" multiple accept="image/*,video/*" style="display:none" onchange="handleFiles(this.files)">
+          <button class="btn-ghost" onclick="sortPhotos()">⇅ Sort</button>
+          <button class="btn-gold" onclick="document.getElementById('pTabInp').click()">+ Add</button>
+          <input type="file" id="pTabInp" multiple accept="image/*,video/*" style="display:none" onchange="handleFiles(this.files)">
         </div>
       </div>
       <div class="photos-grid" id="allPhotosGrid"></div>
     </div>
 
-    <!-- ── MEMORIES TAB ── -->
+    <!-- MEMORIES -->
     <div class="tab-panel" id="tab-memories">
-      <div class="section-header">
-        <h2 class="section-title">💝 Yaadein</h2>
-        <button class="btn-sm" onclick="addMemory()">+ Add Memory</button>
+      <div class="sec-header">
+        <div class="sec-title"><small>Yaadein</small>Khaas Lamhe</div>
+        <button class="btn-gold" onclick="openAddMemory()">+ Add Memory</button>
       </div>
       <div class="memory-timeline" id="memoryTimeline"></div>
     </div>
 
-    <!-- ── MEMBERS TAB ── -->
+    <!-- MEMBERS -->
     <div class="tab-panel" id="tab-members">
-      <div class="section-header">
-        <h2 class="section-title">👨‍👩‍👧‍👦 Family Members</h2>
-        <button class="btn-sm" onclick="openAddMember()">+ Add Member</button>
+      <div class="sec-header">
+        <div class="sec-title"><small>Hamara Parivaar</small>Family Members</div>
       </div>
       <div class="members-grid" id="membersGrid"></div>
     </div>
 
-    <!-- ── SETTINGS TAB ── -->
+    <!-- SETTINGS -->
     <div class="tab-panel" id="tab-settings">
-      <div class="section-header">
-        <h2 class="section-title">⚙️ Settings</h2>
+      <div class="sec-title" style="margin-bottom:20px;"><small>Settings</small>App Customize Karein</div>
+      <div class="settings-card">
+        <h3>💾 Storage Usage</h3>
+        <div class="storage-bar"><div class="storage-fill" id="storageBar"></div></div>
+        <div class="storage-info"><span id="storageUsed">0 MB used</span><span>Local Browser Storage</span></div>
       </div>
-
-      <div style="display:flex;flex-direction:column;gap:16px;max-width:500px;">
-        
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;">
-          <h3 style="font-size:16px;margin-bottom:12px;">💾 Storage Usage</h3>
-          <div class="storage-bar"><div class="storage-fill" id="storageBar"></div></div>
-          <div class="storage-info">
-            <span id="storageUsed">0 MB used</span>
-            <span>∞ Local Storage</span>
-          </div>
+      <div class="settings-card">
+        <h3>🔑 Password Change Karein</h3>
+        <div class="inp-group" style="max-width:300px;">
+          <label>Naya Password (min 6 characters)</label>
+          <input type="password" id="newPwInp" placeholder="Naya password...">
         </div>
-
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;">
-          <h3 style="font-size:16px;margin-bottom:12px;">📱 Offline Mode</h3>
-          <p style="font-size:14px;color:var(--text-muted);margin-bottom:16px;">App offline bhi kaam karti hai. All photos local storage mein save hain.</p>
-          <div class="badge">✅ Offline Ready</div>
+        <div class="inp-group" style="max-width:300px;">
+          <label>Confirm Password</label>
+          <input type="password" id="confirmPwInp" placeholder="Dobara daalen...">
         </div>
-
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;">
-          <h3 style="font-size:16px;margin-bottom:12px;">🔑 Change Password</h3>
-          <div class="input-group">
-            <label>New Password</label>
-            <input type="password" id="newPw" placeholder="Naya password..." style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;width:100%;">
-          </div>
-          <button class="btn-sm" onclick="changePassword()">Save Password</button>
-        </div>
-
-        <div style="background:rgba(255,107,157,0.08);border:1px solid rgba(255,107,157,0.3);border-radius:var(--radius);padding:20px;">
-          <h3 style="font-size:16px;margin-bottom:12px;color:var(--accent);">⚠️ Danger Zone</h3>
-          <button class="btn-ghost" style="border-color:rgba(255,107,157,0.4);color:var(--accent);" onclick="clearAll()">🗑️ All Data Delete करें</button>
-        </div>
-
+        <button class="btn-gold" onclick="changePassword()">💾 Save Password</button>
+      </div>
+      <div class="settings-card">
+        <h3>📱 PWA — Offline Mode</h3>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">App internet ke bina bhi chalti hai. Phone home screen par install karein.</p>
+        <div class="badge">✅ Offline Ready (PWA)</div>
+      </div>
+      <div class="settings-card" style="border-color:rgba(224,85,85,0.25);">
+        <h3 style="color:var(--red);">⚠️ Danger Zone</h3>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">Sab photos aur data hamesha ke liye delete ho jayega!</p>
+        <button class="btn-ghost" style="border-color:rgba(224,85,85,0.4);color:var(--red);" onclick="clearAll()">🗑️ Sab Kuch Delete</button>
       </div>
     </div>
 
-  </div><!-- /app-content -->
-</div><!-- /appView -->
-
-<!-- ══════════ LIGHTBOX ══════════ -->
-<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
-  <img class="lightbox-img" id="lightboxImg" src="" alt="">
-  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
-  <div class="lightbox-actions">
-    <button class="lightbox-btn" onclick="prevPhoto()">← Prev</button>
-    <button class="lightbox-btn download-btn" onclick="downloadCurrent()">⬇ Download</button>
-    <button class="lightbox-btn" onclick="nextPhoto()">Next →</button>
   </div>
 </div>
 
-<!-- ══════════ ADD ALBUM MODAL ══════════ -->
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="lbBgClick(event)">
+  <img class="lb-img" id="lbImg" src="" alt="">
+  <button class="lb-close" onclick="closeLightbox()">✕</button>
+  <div class="lb-nav">
+    <button class="lb-btn" onclick="prevPhoto()">← Pehli</button>
+    <button class="lb-btn lb-dl" onclick="downloadCurrent()">⬇ Download</button>
+    <button class="lb-btn" onclick="nextPhoto()">Agli →</button>
+  </div>
+</div>
+
+<!-- ADD ALBUM MODAL -->
 <div class="modal-overlay" id="addAlbumModal">
   <div class="modal-box">
-    <h2 class="modal-title">📁 New Album बनाएं</h2>
-    <div class="input-group">
-      <label>Album Name</label>
-      <input type="text" id="albumNameInput" placeholder="जैसे: Diwali 2024, Shimla Trip...">
-    </div>
-    <div class="input-group">
-      <label>Album Emoji / Icon</label>
-      <input type="text" id="albumEmoji" placeholder="🎉 🏖️ 🎂 🌸 ..." value="📸">
-    </div>
-    <div style="display:flex;gap:12px;margin-top:8px;">
-      <button class="btn-primary" style="flex:1" onclick="createAlbum()">✨ Create</button>
-      <button class="btn-ghost" onclick="closeModal('addAlbumModal')">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- ADD MEMBER MODAL -->
-<div class="modal-overlay" id="addMemberModal">
-  <div class="modal-box">
-    <h2 class="modal-title">👤 New Member Add करें</h2>
-    <div class="input-group">
-      <label>Name</label>
-      <input type="text" id="newMemberName" placeholder="Name...">
-    </div>
-    <div class="input-group">
-      <label>Avatar Emoji</label>
-      <input type="text" id="newMemberEmoji" placeholder="👦 👧 👨 👩 ..." value="😊">
-    </div>
-    <div class="input-group">
-      <label>Role</label>
-      <input type="text" id="newMemberRole" placeholder="Jaise: Beta, Beti, Chacha...">
-    </div>
-    <div style="display:flex;gap:12px;margin-top:8px;">
-      <button class="btn-primary" style="flex:1" onclick="addMember()">✨ Add</button>
-      <button class="btn-ghost" onclick="closeModal('addMemberModal')">Cancel</button>
+    <div class="modal-title">📁 Naya Album Banayein</div>
+    <div class="inp-group"><label>Album Ka Naam</label>
+      <input type="text" id="albNameInp" placeholder="Jaise: Eid 2024, Kashmir Trip..."></div>
+    <div class="inp-group"><label>Emoji / Icon</label>
+      <input type="text" id="albEmojiInp" value="📸" placeholder="📸 🕌 🎂 🌸"></div>
+    <div style="display:flex;gap:10px;margin-top:4px;">
+      <button class="btn-gold" style="flex:1;" onclick="createAlbum()">✦ Create</button>
+      <button class="btn-ghost" onclick="closeModal('addAlbumModal')">Raho</button>
     </div>
   </div>
 </div>
@@ -1148,161 +427,236 @@
 <!-- ADD MEMORY MODAL -->
 <div class="modal-overlay" id="addMemoryModal">
   <div class="modal-box">
-    <h2 class="modal-title">💝 Memory Add करें</h2>
-    <div class="input-group">
-      <label>Title</label>
-      <input type="text" id="memTitle" placeholder="Jaise: Diwali celebration...">
-    </div>
-    <div class="input-group">
-      <label>Date</label>
-      <input type="date" id="memDate" style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;outline:none;width:100%;">
-    </div>
-    <div class="input-group">
-      <label>Description</label>
-      <input type="text" id="memDesc" placeholder="Is din ki yaad...">
-    </div>
-    <div style="display:flex;gap:12px;margin-top:8px;">
-      <button class="btn-primary" style="flex:1" onclick="saveMemory()">💾 Save</button>
+    <div class="modal-title">💝 Yaad Likhein</div>
+    <div class="inp-group"><label>Title</label>
+      <input type="text" id="memTitleInp" placeholder="Khaas lamhe ka naam..."></div>
+    <div class="inp-group"><label>Tarikh</label>
+      <input type="date" id="memDateInp"></div>
+    <div class="inp-group"><label>Description</label>
+      <input type="text" id="memDescInp" placeholder="Is waqt ki yaad..."></div>
+    <div style="display:flex;gap:10px;margin-top:4px;">
+      <button class="btn-gold" style="flex:1;" onclick="saveMemory()">💾 Save</button>
       <button class="btn-ghost" onclick="closeModal('addMemoryModal')">Cancel</button>
     </div>
   </div>
 </div>
 
-
 <script>
-// ══════════════════════════════════════
+// ═══════════════════════════════════════
+//  FAMILY CONFIG
+// ═══════════════════════════════════════
+const FAMILY = {
+  kausar:  {name:'Kausar', emoji:'🌸', role:'Ghar Ki Roshni',   urdu:'کوثر'},
+  naziya:  {name:'Naziya', emoji:'🌹', role:'Pyaar Ki Pratik',  urdu:'نازیہ'},
+  nilofar: {name:'Nilofar',emoji:'🌺', role:'Phoolon Ki Rani',  urdu:'نیلوفر'},
+  vaseem:  {name:'Vaseem', emoji:'🌿', role:'Ghar Ka Sitaara',  urdu:'وسیم'},
+};
+
+// ═══════════════════════════════════════
+//  SECURITY CONFIG
+// ═══════════════════════════════════════
+const PASS_KEY    = 'hg_pw';
+const DATA_KEY    = 'hg_data';
+const SESS_KEY    = 'hg_sess';
+const ATT_KEY     = 'hg_att';
+const LOCK_KEY    = 'hg_lock';
+const MAX_ATT     = 5;
+const LOCK_MS     = 5 * 60 * 1000;
+const DEFAULT_PW  = 'HamaraGhar@786';
+
+// ═══════════════════════════════════════
 //  STATE
-// ══════════════════════════════════════
-const PASS_KEY = 'fc_password';
-const DATA_KEY = 'fc_data';
-let currentUser = null;
-let currentPhotos = []; // for lightbox
-let currentPhotoIndex = 0;
-let currentAlbum = null;
+// ═══════════════════════════════════════
+let currentUser = null, selectedMember = null;
+let currentPhotos = [], currentPhotoIndex = 0;
+let currentAlbum = null, photosSorted = false;
+let lockTimer = null;
 
-const DEFAULT_PASSWORD = 'family123';
+// ═══════════════════════════════════════
+//  LOCKOUT HELPERS
+// ═══════════════════════════════════════
+const getAtt = () => { try{return parseInt(localStorage.getItem(ATT_KEY)||'0');}catch{return 0;} };
+const setAtt = n => { try{localStorage.setItem(ATT_KEY,String(n));}catch{} };
+const getLock = () => { try{return parseInt(localStorage.getItem(LOCK_KEY)||'0');}catch{return 0;} };
+const setLock = t => { try{localStorage.setItem(LOCK_KEY,String(t));}catch{} };
 
-function loadData() {
+function isLocked() {
+  const t = getLock();
+  if (!t) return false;
+  if (Date.now() < t) return true;
+  setLock(0); setAtt(0); return false;
+}
+
+function lockAccount() {
+  setLock(Date.now() + LOCK_MS);
+  setAtt(0);
+  showView('lockoutView');
+  startLockTimer();
+}
+
+function startLockTimer() {
+  if (lockTimer) clearInterval(lockTimer);
+  lockTimer = setInterval(() => {
+    const rem = Math.max(0, getLock() - Date.now());
+    const m = Math.floor(rem/60000), s = Math.floor((rem%60000)/1000);
+    document.getElementById('loTimer').textContent = String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    if (rem <= 0) { clearInterval(lockTimer); setLock(0); setAtt(0); showView('memberView'); }
+  }, 500);
+}
+
+function tryUnlock() {
+  if (!isLocked()) { if(lockTimer) clearInterval(lockTimer); showView('memberView'); }
+  else { showToast('⏳ Abhi bhi locked hai. Wait karein.'); startLockTimer(); }
+}
+
+// ═══════════════════════════════════════
+//  VIEW
+// ═══════════════════════════════════════
+function showView(id) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ═══════════════════════════════════════
+//  INIT — session check
+// ═══════════════════════════════════════
+function init() {
+  if (isLocked()) { startLockTimer(); showView('lockoutView'); return; }
   try {
-    return JSON.parse(localStorage.getItem(DATA_KEY)) || defaultData();
-  } catch { return defaultData(); }
+    const s = JSON.parse(sessionStorage.getItem(SESS_KEY));
+    if (s && FAMILY[s.m] && Date.now() - s.t < 3600000) { currentUser=s.m; enterApp(); return; }
+  } catch {}
+  showView('memberView');
 }
 
+// ═══════════════════════════════════════
+//  LOGIN FLOW
+// ═══════════════════════════════════════
+function selectMemberStep(id) {
+  if (isLocked()) { startLockTimer(); showView('lockoutView'); return; }
+  selectedMember = id;
+  const m = FAMILY[id];
+  document.getElementById('pwEmoji').textContent = m.emoji;
+  document.getElementById('pwName').textContent = m.name;
+  document.getElementById('pwInput').value = '';
+  document.getElementById('pwErr').style.display = 'none';
+  document.getElementById('pwAtt').style.display = 'none';
+  updateDots();
+  showView('passwordView');
+  setTimeout(() => document.getElementById('pwInput').focus(), 300);
+}
+
+function goBackToMembers() {
+  selectedMember = null;
+  showView('memberView');
+}
+
+function updateDots() {
+  const len = document.getElementById('pwInput').value.length;
+  for (let i=0;i<8;i++) {
+    const d = document.getElementById('d'+i);
+    if (d) d.classList.toggle('filled', i < len);
+  }
+}
+
+function togglePwVis() {
+  const inp = document.getElementById('pwInput');
+  const eye = document.getElementById('pwEyeBtn');
+  inp.type = inp.type==='password' ? 'text' : 'password';
+  eye.textContent = inp.type==='password' ? '👁️' : '🙈';
+}
+
+function doLogin() {
+  if (isLocked()) { lockAccount(); return; }
+  const entered = document.getElementById('pwInput').value;
+  const stored  = localStorage.getItem(PASS_KEY) || DEFAULT_PW;
+  if (entered && entered === stored && selectedMember) {
+    setAtt(0);
+    currentUser = selectedMember;
+    try { sessionStorage.setItem(SESS_KEY, JSON.stringify({m:currentUser,t:Date.now()})); } catch{}
+    enterApp();
+  } else {
+    const att = getAtt() + 1;
+    setAtt(att);
+    const rem = MAX_ATT - att;
+    document.getElementById('pwInput').value = '';
+    updateDots();
+    document.getElementById('pwErr').style.display = 'block';
+    // Shake card
+    const card = document.getElementById('pwCard');
+    card.classList.remove('shake');
+    void card.offsetWidth;
+    card.classList.add('shake');
+    setTimeout(() => card.classList.remove('shake'), 500);
+    if (rem <= 0) { lockAccount(); return; }
+    if (rem <= 3) {
+      document.getElementById('pwAtt').style.display = 'block';
+      document.getElementById('pwAtt').textContent = '⚠️ '+rem+' baar aur galat hua to account lock ho jayega!';
+    }
+  }
+}
+
+function enterApp() {
+  const m = FAMILY[currentUser];
+  document.getElementById('userChipTxt').textContent = m.emoji + ' ' + m.name;
+  showView('appView');
+  renderAll();
+  updateStorageInfo();
+}
+
+function doLogout() {
+  try { sessionStorage.removeItem(SESS_KEY); } catch{}
+  currentUser = null; selectedMember = null;
+  showView('memberView');
+  showToast('👋 Logout ho gaye. Khuda Hafiz!');
+}
+
+// ═══════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════
+function loadData() {
+  try { return JSON.parse(localStorage.getItem(DATA_KEY)) || defaultData(); } catch { return defaultData(); }
+}
 function saveData(d) {
-  localStorage.setItem(DATA_KEY, JSON.stringify(d));
+  try { localStorage.setItem(DATA_KEY, JSON.stringify(d)); } catch { showToast('⚠️ Storage full! Kuch photos delete karein.'); }
 }
-
 function defaultData() {
   return {
-    albums: [
-      { id: 'album-1', name: 'Diwali 2023', emoji: '🪔', photos: [], createdBy: 'Papa', createdAt: Date.now() - 86400000 * 30 },
-      { id: 'album-2', name: 'Shimla Trip', emoji: '🏔️', photos: [], createdBy: 'Mama', createdAt: Date.now() - 86400000 * 60 },
+    albums:[
+      {id:'a1',name:'Eid Ki Khushiyan',emoji:'🕌',photos:[],createdBy:'Family',createdAt:Date.now()-864e5*10},
+      {id:'a2',name:'Ghar Ki Yaadein', emoji:'🏡',photos:[],createdBy:'Family',createdAt:Date.now()-864e5*20},
     ],
-    photos: [],
-    members: [
-      { id: 'm1', name: 'Papa', emoji: '👨', role: 'Father', photoCount: 0 },
-      { id: 'm2', name: 'Mama', emoji: '👩', role: 'Mother', photoCount: 0 },
-      { id: 'm3', name: 'Bhaiya', emoji: '👦', role: 'Son', photoCount: 0 },
-      { id: 'm4', name: 'Didi', emoji: '👧', role: 'Daughter', photoCount: 0 },
-    ],
-    memories: [
-      { id: 'mem1', title: '🎉 Pehli Diwali Saath', date: '2023-11-12', desc: 'Is saal hamne saath milke Diwali celebrate ki. Bahut maza aaya!', photos: [] },
-      { id: 'mem2', title: '🏔️ Shimla Mein Barf', date: '2024-01-15', desc: 'Pehli baar bache ne barf dekhi, unki khushi dekh ke dil khush ho gaya.', photos: [] },
+    photos:[],
+    memories:[
+      {id:'m1',title:'🕌 Eid Mubarak!',date:'2024-04-10',desc:'Is saal ki Eid bahut achi rahi. Poora ghar saath tha, bahut khushi ka din tha.'},
+      {id:'m2',title:'🌸 Pehli Barish',date:'2024-07-15',desc:'Baarish mein saath chai piya — har lamha yaadgaar tha.'},
     ]
   };
 }
 
-// ══════════════════════════════════════
-//  LOGIN
-// ══════════════════════════════════════
-let selectedMember = null;
-
-function selectMember(btn, name, emoji) {
-  document.querySelectorAll('.member-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  selectedMember = { name, emoji };
-}
-
-function doLogin() {
-  const pw = document.getElementById('pwInput').value;
-  const storedPw = localStorage.getItem(PASS_KEY) || DEFAULT_PASSWORD;
-  
-  if (!selectedMember) {
-    showToast('⚠️ Pehle apna naam chunein!');
-    return;
-  }
-  
-  if (pw === storedPw) {
-    currentUser = selectedMember;
-    document.getElementById('loginView').classList.remove('active');
-    document.getElementById('appView').classList.add('active');
-    document.getElementById('userBadge').textContent = selectedMember.emoji + ' ' + selectedMember.name;
-    renderAll();
-    updateStorageInfo();
-  } else {
-    document.getElementById('errMsg').style.display = 'block';
-    setTimeout(() => document.getElementById('errMsg').style.display = 'none', 3000);
-  }
-}
-
-document.getElementById('pwInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') doLogin();
-});
-
-function doLogout() {
-  document.getElementById('appView').classList.remove('active');
-  document.getElementById('loginView').classList.add('active');
-  currentUser = null;
-  document.getElementById('pwInput').value = '';
-  document.querySelectorAll('.member-btn').forEach(b => b.classList.remove('selected'));
-  selectedMember = null;
-}
-
-// ══════════════════════════════════════
-//  TABS
-// ══════════════════════════════════════
-function switchTab(name, btn) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  if (name === 'albums') showAlbumList();
-  if (name === 'photos') renderAllPhotos();
-  if (name === 'memories') renderMemories();
-  if (name === 'members') renderMembers();
-}
-
-// ══════════════════════════════════════
-//  FILE HANDLING
-// ══════════════════════════════════════
+// ═══════════════════════════════════════
+//  FILE UPLOAD
+// ═══════════════════════════════════════
 function handleFiles(files) {
   if (!files.length) return;
-  const data = loadData();
-  let count = 0;
-
+  const data = loadData(); let count = 0, total = files.length;
   Array.from(files).forEach(file => {
+    if (file.size > 15*1024*1024) { showToast('⚠️ "'+file.name+'" bahut bada! (max 15MB)'); total--; return; }
     const reader = new FileReader();
-    reader.onload = (e) => {
-      const photo = {
-        id: 'photo-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
-        name: file.name,
-        src: e.target.result,
-        type: file.type,
-        size: file.size,
-        uploadedBy: currentUser?.name || 'Unknown',
-        uploadedAt: Date.now(),
-        albumId: currentAlbum || null
-      };
-      data.photos.push(photo);
+    reader.onload = e => {
+      const p = {id:'p-'+Date.now()+'-'+Math.random().toString(36).slice(2,5),
+        name:file.name, src:e.target.result, type:file.type, size:file.size,
+        uploadedBy:FAMILY[currentUser]?.name||currentUser, uploadedAt:Date.now(), albumId:currentAlbum||null};
+      data.photos.push(p);
       if (currentAlbum) {
-        const album = data.albums.find(a => a.id === currentAlbum);
-        if (album) album.photos.push(photo.id);
+        const alb = data.albums.find(a=>a.id===currentAlbum);
+        if (alb && !alb.photos.includes(p.id)) alb.photos.push(p.id);
       }
       count++;
-      if (count === files.length) {
-        saveData(data);
-        renderAll();
-        showToast(`✅ ${count} photo${count > 1 ? 's' : ''} upload ho gaye!`);
+      if (count===total) {
+        saveData(data); renderAll();
+        if (currentAlbum) openAlbum(currentAlbum);
+        showToast('✅ '+count+' photo'+(count>1?'s':'')+' upload ho gaye!');
         updateStorageInfo();
       }
     };
@@ -1310,72 +664,53 @@ function handleFiles(files) {
   });
 }
 
-// Drag and drop
-const uploadZone = document.getElementById('mainUploadZone');
-uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('drag-over'); });
-uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('drag-over'));
-uploadZone.addEventListener('drop', e => {
-  e.preventDefault();
-  uploadZone.classList.remove('drag-over');
-  handleFiles(e.dataTransfer.files);
-});
+const uz = document.getElementById('mainUploadZone');
+uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('drag-over');});
+uz.addEventListener('dragleave',()=>uz.classList.remove('drag-over'));
+uz.addEventListener('drop',e=>{e.preventDefault();uz.classList.remove('drag-over');handleFiles(e.dataTransfer.files);});
 
-// ══════════════════════════════════════
+// ═══════════════════════════════════════
 //  ALBUMS
-// ══════════════════════════════════════
+// ═══════════════════════════════════════
 function renderAlbums() {
   const data = loadData();
   const grid = document.getElementById('albumsGrid');
-  
   if (!data.albums.length) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">📂</div><h3>Koi album nahi</h3><p>New album banaiye ya photos upload karein</p></div>`;
-    return;
+    grid.innerHTML = '<div class="empty-state"><div class="es-icon">📂</div><h3>Koi album nahi</h3><p>New album banayein ya photos upload karein</p></div>'; return;
   }
-
-  grid.innerHTML = data.albums.map(album => {
-    const photos = data.photos.filter(p => album.photos.includes(p.id));
-    const thumbSrc = photos[0]?.src || null;
-    return `
-    <div class="album-card" onclick="openAlbum('${album.id}')">
-      <div class="album-thumb" style="background:linear-gradient(135deg,var(--surface2),var(--surface));">
-        ${thumbSrc ? `<img src="${thumbSrc}" alt="${album.name}">` : `<span style="font-size:52px;">${album.emoji}</span>`}
-        <div class="album-gradient"></div>
-      </div>
-      <div class="album-info">
-        <div class="album-name">${album.emoji} ${album.name}</div>
-        <div class="album-count">${photos.length} photos • ${album.createdBy}</div>
-      </div>
-    </div>`;
+  grid.innerHTML = data.albums.map(alb => {
+    const photos = data.photos.filter(p=>alb.photos.includes(p.id));
+    const th = photos[0]?.src||null;
+    return `<div class="album-card" onclick="openAlbum('${alb.id}')">
+      <div class="album-thumb">${th?`<img src="${th}" alt="${alb.name}" loading="lazy">`:alb.emoji}<div class="album-grd"></div></div>
+      <div class="album-info"><div class="album-name">${alb.emoji} ${alb.name}</div>
+      <div class="album-meta"><span>${photos.length} photos</span><span>${alb.createdBy}</span></div></div></div>`;
   }).join('');
 }
 
 function openAlbum(id) {
   currentAlbum = id;
   const data = loadData();
-  const album = data.albums.find(a => a.id === id);
-  const photos = data.photos.filter(p => album.photos.includes(p.id));
-
+  const alb = data.albums.find(a=>a.id===id);
+  const photos = data.photos.filter(p=>alb.photos.includes(p.id));
   document.getElementById('albumListView').style.display = 'none';
   document.getElementById('albumDetailView').style.display = 'block';
-  document.getElementById('albumDetailTitle').textContent = album.emoji + ' ' + album.name;
-
+  document.getElementById('albDetailTitle').innerHTML = '<small>Album</small>'+alb.emoji+' '+alb.name;
+  document.getElementById('dlAlbumBtn').onclick = ()=>downloadAlbum(id);
   const grid = document.getElementById('albumPhotosGrid');
   if (!photos.length) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">📷</div><h3>Album empty hai</h3><p>Photos upload karein ya main upload zone use karein</p></div>`;
+    grid.innerHTML = '<div class="empty-state"><div class="es-icon">📷</div><h3>Album khali hai</h3><p>Koi bhi photo upload kar sakte hain</p></div>';
   } else {
     currentPhotos = photos;
-    grid.innerHTML = photos.map((p, i) => `
+    grid.innerHTML = photos.map((p,i)=>`
       <div class="photo-item" onclick="openLightbox(${i})">
         <img src="${p.src}" alt="${p.name}" loading="lazy">
         <div class="photo-overlay">
-          <button class="photo-action" onclick="event.stopPropagation();downloadPhoto('${p.id}')">⬇</button>
-          <button class="photo-action" onclick="event.stopPropagation();deletePhoto('${p.id}')">🗑️</button>
+          <button class="ph-act" onclick="event.stopPropagation();downloadPhoto('${p.id}')">⬇</button>
+          <button class="ph-act" onclick="event.stopPropagation();deletePhoto('${p.id}')">🗑️</button>
         </div>
-        <div class="photo-label">${p.name.length > 14 ? p.name.slice(0,12)+'...' : p.name}</div>
-      </div>`).join('');
+        <div class="ph-label">${p.uploadedBy}</div></div>`).join('');
   }
-
-  document.getElementById('downloadAlbumBtn').onclick = () => downloadAlbum(id);
 }
 
 function showAlbumList() {
@@ -1385,315 +720,206 @@ function showAlbumList() {
   renderAlbums();
 }
 
-function openAddAlbum() {
-  document.getElementById('addAlbumModal').classList.add('open');
-  document.getElementById('albumNameInput').focus();
-}
-
 function createAlbum() {
-  const name = document.getElementById('albumNameInput').value.trim();
-  const emoji = document.getElementById('albumEmoji').value.trim() || '📸';
+  const name = document.getElementById('albNameInp').value.trim();
+  const emoji = document.getElementById('albEmojiInp').value.trim() || '📸';
   if (!name) { showToast('⚠️ Album ka naam daalo!'); return; }
-
   const data = loadData();
-  data.albums.unshift({
-    id: 'album-' + Date.now(),
-    name, emoji, photos: [],
-    createdBy: currentUser?.name || 'Family',
-    createdAt: Date.now()
-  });
-  saveData(data);
-  closeModal('addAlbumModal');
-  document.getElementById('albumNameInput').value = '';
-  renderAlbums();
-  showToast(`📁 "${name}" album ban gaya!`);
+  data.albums.unshift({id:'a-'+Date.now(),name,emoji,photos:[],createdBy:FAMILY[currentUser]?.name||currentUser,createdAt:Date.now()});
+  saveData(data); closeModal('addAlbumModal');
+  document.getElementById('albNameInp').value = '';
+  renderAlbums(); showToast('📁 "'+name+'" album ban gaya!');
 }
 
-// ══════════════════════════════════════
+// ═══════════════════════════════════════
 //  ALL PHOTOS
-// ══════════════════════════════════════
-let photosSorted = false;
-
+// ═══════════════════════════════════════
 function renderAllPhotos() {
   const data = loadData();
   const grid = document.getElementById('allPhotosGrid');
   let photos = [...data.photos];
-  if (photosSorted) photos.sort((a,b) => a.name.localeCompare(b.name));
-  else photos.sort((a,b) => b.uploadedAt - a.uploadedAt);
-
+  if (photosSorted) photos.sort((a,b)=>a.name.localeCompare(b.name));
+  else photos.sort((a,b)=>b.uploadedAt-a.uploadedAt);
   if (!photos.length) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="es-icon">📷</div><h3>Koi photo nahi</h3><p>Albums mein jakar photos upload karein</p></div>`;
-    return;
+    grid.innerHTML = '<div class="empty-state"><div class="es-icon">🖼️</div><h3>Koi tasveer nahi</h3><p>Albums mein photos add karein</p></div>'; return;
   }
-
   currentPhotos = photos;
-  grid.innerHTML = photos.map((p, i) => `
+  grid.innerHTML = photos.map((p,i)=>`
     <div class="photo-item" onclick="openLightbox(${i})">
       <img src="${p.src}" alt="${p.name}" loading="lazy">
       <div class="photo-overlay">
-        <button class="photo-action" onclick="event.stopPropagation();downloadPhoto('${p.id}')">⬇</button>
-        <button class="photo-action" onclick="event.stopPropagation();deletePhoto('${p.id}')">🗑️</button>
+        <button class="ph-act" onclick="event.stopPropagation();downloadPhoto('${p.id}')">⬇</button>
+        <button class="ph-act" onclick="event.stopPropagation();deletePhoto('${p.id}')">🗑️</button>
       </div>
-      <div class="photo-label">${p.uploadedBy}</div>
-    </div>`).join('');
+      <div class="ph-label">${p.uploadedBy}</div></div>`).join('');
 }
 
 function sortPhotos() {
   photosSorted = !photosSorted;
   renderAllPhotos();
-  showToast(photosSorted ? '🔤 Name se sort' : '🕐 Date se sort');
+  showToast(photosSorted?'🔤 Naam se sort':'🕐 Date se sort');
 }
 
-// ══════════════════════════════════════
+// ═══════════════════════════════════════
 //  LIGHTBOX
-// ══════════════════════════════════════
-function openLightbox(index) {
-  currentPhotoIndex = index;
-  document.getElementById('lightboxImg').src = currentPhotos[index].src;
+// ═══════════════════════════════════════
+function openLightbox(i) {
+  currentPhotoIndex = i;
+  document.getElementById('lbImg').src = currentPhotos[i].src;
   document.getElementById('lightbox').classList.add('open');
 }
+function closeLightbox() { document.getElementById('lightbox').classList.remove('open'); }
+function lbBgClick(e) { if(e.target===document.getElementById('lightbox'))closeLightbox(); }
+function prevPhoto() { currentPhotoIndex=(currentPhotoIndex-1+currentPhotos.length)%currentPhotos.length; document.getElementById('lbImg').src=currentPhotos[currentPhotoIndex].src; }
+function nextPhoto() { currentPhotoIndex=(currentPhotoIndex+1)%currentPhotos.length; document.getElementById('lbImg').src=currentPhotos[currentPhotoIndex].src; }
+function downloadCurrent() { downloadPhoto(currentPhotos[currentPhotoIndex].id); }
 
-function closeLightbox(e) {
-  if (!e || e.target === document.getElementById('lightbox')) {
-    document.getElementById('lightbox').classList.remove('open');
-  }
-}
-
-function prevPhoto() {
-  currentPhotoIndex = (currentPhotoIndex - 1 + currentPhotos.length) % currentPhotos.length;
-  document.getElementById('lightboxImg').src = currentPhotos[currentPhotoIndex].src;
-}
-
-function nextPhoto() {
-  currentPhotoIndex = (currentPhotoIndex + 1) % currentPhotos.length;
-  document.getElementById('lightboxImg').src = currentPhotos[currentPhotoIndex].src;
-}
-
-function downloadCurrent() {
-  downloadPhoto(currentPhotos[currentPhotoIndex].id);
-}
-
-// ══════════════════════════════════════
+// ═══════════════════════════════════════
 //  DOWNLOAD
-// ══════════════════════════════════════
-function downloadPhoto(photoId) {
-  const data = loadData();
-  const photo = data.photos.find(p => p.id === photoId);
-  if (!photo) return;
-  const a = document.createElement('a');
-  a.href = photo.src;
-  a.download = photo.name;
-  a.click();
-  showToast(`⬇ "${photo.name}" download ho raha hai...`);
+// ═══════════════════════════════════════
+function downloadPhoto(id) {
+  const p = loadData().photos.find(ph=>ph.id===id);
+  if (!p) return;
+  const a = document.createElement('a'); a.href=p.src; a.download=p.name; a.click();
+  showToast('⬇ "'+p.name+'" download ho raha hai...');
 }
-
-function downloadAlbum(albumId) {
+function downloadAlbum(id) {
   const data = loadData();
-  const album = data.albums.find(a => a.id === albumId);
-  const photos = data.photos.filter(p => album.photos.includes(p.id));
+  const alb = data.albums.find(a=>a.id===id);
+  const photos = data.photos.filter(p=>alb.photos.includes(p.id));
   if (!photos.length) { showToast('❌ Album mein koi photo nahi!'); return; }
-
-  photos.forEach((photo, i) => {
-    setTimeout(() => {
-      const a = document.createElement('a');
-      a.href = photo.src;
-      a.download = photo.name;
-      a.click();
-    }, i * 300);
-  });
-  showToast(`⬇ ${photos.length} photos download ho rahe hain...`);
+  photos.forEach((p,i)=>setTimeout(()=>{const a=document.createElement('a');a.href=p.src;a.download=p.name;a.click();},i*350));
+  showToast('⬇ '+photos.length+' photos download ho rahe hain...');
 }
 
-// ══════════════════════════════════════
-//  DELETE PHOTO
-// ══════════════════════════════════════
-function deletePhoto(photoId) {
-  if (!confirm('Yeh photo delete karna chahte hain?')) return;
+// ═══════════════════════════════════════
+//  DELETE
+// ═══════════════════════════════════════
+function deletePhoto(id) {
+  if (!confirm('Yeh tasveer delete karni hai?')) return;
   const data = loadData();
-  data.photos = data.photos.filter(p => p.id !== photoId);
-  data.albums.forEach(a => {
-    a.photos = a.photos.filter(id => id !== photoId);
-  });
+  data.photos = data.photos.filter(p=>p.id!==id);
+  data.albums.forEach(a=>{a.photos=a.photos.filter(pid=>pid!==id);});
   saveData(data);
-  renderAll();
-  showToast('🗑️ Photo delete ho gayi!');
+  if (currentAlbum) openAlbum(currentAlbum); else renderAllPhotos();
+  showToast('🗑️ Tasveer delete ho gayi.'); updateStorageInfo();
 }
 
-// ══════════════════════════════════════
+// ═══════════════════════════════════════
 //  MEMBERS
-// ══════════════════════════════════════
+// ═══════════════════════════════════════
 function renderMembers() {
   const data = loadData();
-  const grid = document.getElementById('membersGrid');
-
-  grid.innerHTML = data.members.map(m => {
-    const photoCount = data.photos.filter(p => p.uploadedBy === m.name).length;
-    return `
-    <div class="member-card">
-      <span class="member-card-avatar">${m.emoji}</span>
-      <div class="member-card-name">${m.name}</div>
-      <div class="member-card-role">${m.role}</div>
-      <div class="member-card-count">📷 ${photoCount} photos uploaded</div>
-    </div>`;
+  document.getElementById('membersGrid').innerHTML = Object.entries(FAMILY).map(([k,m])=>{
+    const cnt = data.photos.filter(p=>p.uploadedBy===m.name).length;
+    return `<div class="member-card">
+      <span class="mc-avatar">${m.emoji}</span>
+      <div class="mc-name">${m.name}</div>
+      <div class="mc-urdu">${m.urdu}</div>
+      <div class="mc-role">${m.role}</div>
+      <div class="mc-cnt">📷 ${cnt} photos</div></div>`;
   }).join('');
 }
 
-function openAddMember() {
-  document.getElementById('addMemberModal').classList.add('open');
-}
-
-function addMember() {
-  const name = document.getElementById('newMemberName').value.trim();
-  const emoji = document.getElementById('newMemberEmoji').value.trim() || '😊';
-  const role = document.getElementById('newMemberRole').value.trim() || 'Family Member';
-  if (!name) { showToast('⚠️ Naam daalo!'); return; }
-
-  const data = loadData();
-  data.members.push({ id: 'm-' + Date.now(), name, emoji, role });
-  saveData(data);
-  closeModal('addMemberModal');
-  renderMembers();
-  showToast(`👤 ${name} family mein add ho gaye!`);
-}
-
-// ══════════════════════════════════════
+// ═══════════════════════════════════════
 //  MEMORIES
-// ══════════════════════════════════════
+// ═══════════════════════════════════════
 function renderMemories() {
   const data = loadData();
-  const timeline = document.getElementById('memoryTimeline');
-
+  const tl = document.getElementById('memoryTimeline');
   if (!data.memories.length) {
-    timeline.innerHTML = `<div class="empty-state"><div class="es-icon">💝</div><h3>Koi memory nahi</h3><p>Apni special yaadon ko yahan save karein</p></div>`;
-    return;
+    tl.innerHTML = '<div class="empty-state"><div class="es-icon">💝</div><h3>Koi yaad nahi</h3><p>Khaas lamhe yahan save karein</p></div>'; return;
   }
-
-  timeline.innerHTML = data.memories.map(m => {
+  tl.innerHTML = data.memories.map(m=>{
     const d = new Date(m.date);
-    const day = d.getDate();
-    const month = d.toLocaleString('default', { month: 'short' });
-    return `
-    <div class="memory-entry">
-      <div class="memory-date">
-        <div class="memory-day">${day}</div>
-        <div class="memory-month">${month}</div>
-      </div>
-      <div class="memory-content">
-        <div class="memory-title">${m.title}</div>
-        <div class="memory-desc">${m.desc}</div>
-      </div>
-    </div>`;
+    return `<div class="memory-card">
+      <div class="mem-date"><div class="mem-day">${d.getDate()}</div><div class="mem-month">${d.toLocaleString('default',{month:'short'})}</div></div>
+      <div class="mem-body"><div class="mem-title">${m.title}</div><div class="mem-desc">${m.desc}</div></div></div>`;
   }).join('');
 }
-
-function addMemory() {
-  document.getElementById('memDate').valueAsDate = new Date();
-  document.getElementById('addMemoryModal').classList.add('open');
+function openAddMemory() {
+  document.getElementById('memDateInp').valueAsDate = new Date();
+  openModal('addMemoryModal');
 }
-
 function saveMemory() {
-  const title = document.getElementById('memTitle').value.trim();
-  const date = document.getElementById('memDate').value;
-  const desc = document.getElementById('memDesc').value.trim();
-  if (!title || !date) { showToast('⚠️ Title aur date zaroor bharein!'); return; }
-
+  const title=document.getElementById('memTitleInp').value.trim();
+  const date=document.getElementById('memDateInp').value;
+  const desc=document.getElementById('memDescInp').value.trim();
+  if (!title||!date) { showToast('⚠️ Title aur date zaroori hai!'); return; }
   const data = loadData();
-  data.memories.unshift({ id: 'mem-' + Date.now(), title, date, desc, photos: [] });
-  saveData(data);
-  closeModal('addMemoryModal');
-  renderMemories();
-  showToast('💝 Memory save ho gayi!');
+  data.memories.unshift({id:'m-'+Date.now(),title,date,desc});
+  saveData(data); closeModal('addMemoryModal');
+  document.getElementById('memTitleInp').value='';
+  document.getElementById('memDescInp').value='';
+  renderMemories(); showToast('💝 Yaad save ho gayi!');
 }
 
-// ══════════════════════════════════════
+// ═══════════════════════════════════════
 //  SETTINGS
-// ══════════════════════════════════════
+// ═══════════════════════════════════════
 function changePassword() {
-  const np = document.getElementById('newPw').value;
-  if (!np || np.length < 4) { showToast('⚠️ Password kam se kam 4 characters ka hona chahiye!'); return; }
+  const np = document.getElementById('newPwInp').value;
+  const cp = document.getElementById('confirmPwInp').value;
+  if (!np||np.length<6) { showToast('⚠️ Password kam se kam 6 characters ka hona chahiye!'); return; }
+  if (np!==cp) { showToast('❌ Dono passwords match nahi karte!'); return; }
   localStorage.setItem(PASS_KEY, np);
-  document.getElementById('newPw').value = '';
-  showToast('🔑 Password change ho gaya!');
+  document.getElementById('newPwInp').value='';
+  document.getElementById('confirmPwInp').value='';
+  showToast('🔑 Password change ho gaya! Yaad rakhein.');
 }
-
 function clearAll() {
-  if (!confirm('⚠️ Sab kuch delete ho jayega! Pakka?')) return;
-  if (!confirm('Bilkul pakka? Ek baar delete hone ke baad wapas nahi aayega!')) return;
-  localStorage.removeItem(DATA_KEY);
-  showToast('🗑️ Sab data delete ho gaya!');
-  renderAll();
+  if (!confirm('⚠️ SARI PHOTOS AUR DATA DELETE HO JAYEGA! Pakka?')) return;
+  if (!confirm('Aakhri mauka — Bilkul pakka?')) return;
+  localStorage.removeItem(DATA_KEY); renderAll(); updateStorageInfo();
+  showToast('🗑️ Sab delete ho gaya.');
 }
-
 function updateStorageInfo() {
   try {
-    let total = 0;
-    for (let key in localStorage) {
-      if (localStorage.hasOwnProperty(key)) total += localStorage[key].length;
-    }
-    const mb = (total * 2 / 1024 / 1024).toFixed(1);
-    document.getElementById('storageUsed').textContent = mb + ' MB used';
-    const pct = Math.min((parseFloat(mb) / 50) * 100, 100);
-    document.getElementById('storageBar').style.width = pct + '%';
-  } catch(e) {}
+    let tot=0; for(let k in localStorage)if(localStorage.hasOwnProperty(k))tot+=localStorage[k].length;
+    const mb=(tot*2/1024/1024).toFixed(1);
+    document.getElementById('storageUsed').textContent=mb+' MB used';
+    document.getElementById('storageBar').style.width=Math.min(parseFloat(mb)/50*100,100)+'%';
+  } catch{}
 }
 
-// ══════════════════════════════════════
-//  UTILS
-// ══════════════════════════════════════
-function renderAll() {
-  renderAlbums();
-  renderMembers();
-  renderMemories();
+// ═══════════════════════════════════════
+//  TABS
+// ═══════════════════════════════════════
+function switchTab(name,btn) {
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  if(name==='albums'){showAlbumList();}
+  if(name==='photos')renderAllPhotos();
+  if(name==='memories')renderMemories();
+  if(name==='members')renderMembers();
+  if(name==='settings')updateStorageInfo();
 }
+function renderAll() { renderAlbums(); renderMembers(); renderMemories(); }
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3200);}
 
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-// Keyboard shortcuts
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    closeLightbox();
-    document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+// Keyboard
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){closeLightbox();document.querySelectorAll('.modal-overlay').forEach(m=>m.classList.remove('open'));}
+  if(document.getElementById('lightbox').classList.contains('open')){
+    if(e.key==='ArrowLeft')prevPhoto();if(e.key==='ArrowRight')nextPhoto();
   }
-  if (document.getElementById('lightbox').classList.contains('open')) {
-    if (e.key === 'ArrowLeft') prevPhoto();
-    if (e.key === 'ArrowRight') nextPhoto();
-  }
+  if(document.getElementById('passwordView').classList.contains('active')&&e.key==='Escape')goBackToMembers();
 });
 
-// ══════════════════════════════════════
-//  OFFLINE DETECTION
-// ══════════════════════════════════════
-function updateOnlineStatus() {
-  const badge = document.getElementById('offlineBadge');
-  badge.style.display = navigator.onLine ? 'none' : 'block';
-}
+// Offline
+window.addEventListener('online',()=>document.getElementById('offlineBadge').style.display='none');
+window.addEventListener('offline',()=>document.getElementById('offlineBadge').style.display='block');
+if(!navigator.onLine)document.getElementById('offlineBadge').style.display='block';
 
-window.addEventListener('online', updateOnlineStatus);
-window.addEventListener('offline', updateOnlineStatus);
-updateOnlineStatus();
+// Service Worker
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
 
-// ══════════════════════════════════════
-//  SERVICE WORKER REGISTRATION
-// ══════════════════════════════════════
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').then(() => {
-      console.log('✅ Service Worker registered - Offline mode active!');
-    }).catch(() => {
-      console.log('SW registration failed - running without offline mode');
-    });
-  });
-}
+// START
+init();
 </script>
-
 </body>
 </html>
