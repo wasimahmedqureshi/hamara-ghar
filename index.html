@@ -544,6 +544,15 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
         <button class="btn-blue" onclick="updateCloudConfig()">☁️ Update Config</button>
       </div>
 
+      <div class="settings-card" style="border-color:rgba(46,204,113,0.25);">
+        <h3 style="color:var(--emerald);">🔄 Cloudinary Se Sync Karein</h3>
+        <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">Agar photos gayab ho gayi hain ya naye device par use kar rahe hain toh Cloudinary se saari photos wapas la sakते hain.</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button class="btn-gold" onclick="syncFromCloudinary()" id="syncBtn">🔄 Cloudinary Se Photos Sync Karein</button>
+        </div>
+        <div id="syncStatus" style="margin-top:12px;font-size:12px;color:var(--text-muted);display:none;"></div>
+      </div>
+
       <div class="settings-card" style="border-color:rgba(224,85,85,0.25);">
         <h3 style="color:var(--red);">⚠️ Danger Zone</h3>
         <p style="font-size:13px;color:var(--text-muted);margin-bottom:14px;">Local data clear hoga (Cloudinary photos safe rahenge).</p>
@@ -1019,6 +1028,127 @@ function clearLocalData() {
   renderAll();
   showToast('🗑️ Local data clear ho gaya. Photos Cloudinary par safe hain.');
 }
+// ═══════════════════════════════════════════
+//  SYNC FROM CLOUDINARY
+// ═══════════════════════════════════════════
+async function syncFromCloudinary() {
+  const cfg = getConfig();
+  if (!cfg || !cfg.cloudName || !cfg.apiKey) {
+    showToast('❌ Cloudinary config nahi hai!', true); return;
+  }
+
+  const btn = document.getElementById('syncBtn');
+  const status = document.getElementById('syncStatus');
+  btn.disabled = true;
+  btn.textContent = '⏳ Sync ho raha hai...';
+  status.style.display = 'block';
+  status.textContent = '☁️ Cloudinary se photos la raha hoon...';
+
+  try {
+    // Use Cloudinary Search API to get all photos in hamara-ghar folder
+    const res = await fetch(
+      `https://api.cloudinary.com/v1_1/${cfg.cloudName}/resources/search`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Basic ' + btoa(cfg.apiKey + ':' + (cfg.apiSecret || ''))
+        },
+        body: JSON.stringify({
+          expression: 'folder:hamara-ghar/*',
+          max_results: 500,
+          sort_by: [{ created_at: 'desc' }],
+          with_field: ['tags']
+        })
+      }
+    );
+
+    // Search API needs secret — use list resources instead (public)
+    // Fallback: use tag-based listing which works with just cloud name
+    if (!res.ok) throw new Error('search_failed');
+
+    const result = await res.json();
+    const resources = result.resources || [];
+    importResources(resources, status, btn);
+
+  } catch(e) {
+    // Fallback: use tag listing (no secret needed)
+    await syncByTag(cfg, status, btn);
+  }
+}
+
+async function syncByTag(cfg, status, btn) {
+  try {
+    // Cloudinary tag-based listing — works without API secret
+    const res = await fetch(
+      `https://res.cloudinary.com/${cfg.cloudName}/image/list/hamara-ghar.json`
+    );
+
+    if (!res.ok) throw new Error('Tag list failed: ' + res.status);
+
+    const result = await res.json();
+    const resources = result.resources || [];
+
+    if (!resources.length) {
+      status.textContent = '⚠️ Koi photo nahi mili. Tag "hamara-ghar" se upload ki hoi photos yahaan aayengi.';
+      btn.disabled = false;
+      btn.textContent = '🔄 Cloudinary Se Photos Sync Karein';
+      return;
+    }
+
+    importResources(resources, status, btn);
+
+  } catch(err) {
+    // Final fallback message
+    status.innerHTML = `❌ Auto sync nahi ho saka.<br>
+    <strong style="color:var(--gold)">Manual fix:</strong> Settings → "Local Data Clear" karein → photos dobara upload karein.<br>
+    <span style="color:var(--emerald)">✅ Cloudinary par photos SAFE hain!</span>`;
+    btn.disabled = false;
+    btn.textContent = '🔄 Retry Sync';
+  }
+}
+
+function importResources(resources, status, btn) {
+  const cfg = getConfig();
+  const data = loadData();
+  const existingIds = new Set(data.photos.map(p => p.publicId));
+  let added = 0;
+
+  resources.forEach(r => {
+    const pubId = r.public_id;
+    if (existingIds.has(pubId)) return; // already exists
+
+    const url = `https://res.cloudinary.com/${cfg.cloudName}/image/upload/${pubId}`;
+    const thumbUrl = `https://res.cloudinary.com/${cfg.cloudName}/image/upload/w_400,h_400,c_fill,q_auto,f_auto/${pubId}`;
+
+    const photo = {
+      id: 'p-sync-' + Date.now() + '-' + Math.random().toString(36).slice(2,6),
+      publicId: pubId,
+      url: url,
+      thumbUrl: thumbUrl,
+      name: pubId.split('/').pop() + '.jpg',
+      width: r.width || 0,
+      height: r.height || 0,
+      uploadedBy: 'Synced',
+      uploadedAt: new Date(r.created_at || Date.now()).getTime(),
+      albumId: null,
+    };
+
+    data.photos.unshift(photo);
+    existingIds.add(pubId);
+    added++;
+  });
+
+  saveData(data);
+  renderAll();
+  renderAllPhotosGrid(data);
+
+  status.innerHTML = `✅ <strong style="color:var(--emerald)">${added} nayi photos</strong> sync ho gayi! Total: ${data.photos.length} photos.`;
+  btn.disabled = false;
+  btn.textContent = '🔄 Cloudinary Se Photos Sync Karein';
+  showToast(`✅ ${added} photos sync ho gayi Cloudinary se!`);
+}
+
 function updateCloudStatus() {
   const cfg=getConfig();
   if(cfg&&cfg.cloudName){
