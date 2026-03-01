@@ -724,7 +724,6 @@ async function handleUpload(files, context) {
 
   const fileArr = Array.from(files);
   const folder = currentAlbum || 'general';
-  const data = loadData();
   let done = 0;
   const total = fileArr.length;
 
@@ -754,19 +753,22 @@ async function handleUpload(files, context) {
         albumId: currentAlbum || null,
       };
 
-      data.photos.unshift(photo);
+      // ✅ FIX: Har photo ke liye FRESH data load karo
+      // Taaki multiple photos ek saath save hon
+      const freshData = loadData();
+      freshData.photos.unshift(photo);
       if (currentAlbum) {
-        const alb = data.albums.find(a => a.id === currentAlbum);
+        const alb = freshData.albums.find(a => a.id === currentAlbum);
         if (alb && !alb.photoIds.includes(photo.id)) alb.photoIds.unshift(photo.id);
       }
+      saveData(freshData);
 
       done++;
       updateProgress(done, total, file.name);
-      saveData(data);
 
-      // Re-render incrementally
-      if (currentAlbum) renderAlbumPhotos(data);
-      else renderAllPhotosGrid(data);
+      // Re-render after each photo
+      if (currentAlbum) renderAlbumPhotos(freshData);
+      else renderAllPhotosGrid(freshData);
       renderAlbums();
 
     } catch(err) {
@@ -777,8 +779,9 @@ async function handleUpload(files, context) {
   }
 
   setTimeout(() => { pw.style.display = 'none'; }, 2000);
+  const finalData = loadData();
   showToast('✅ ' + done + '/' + total + ' photos Cloudinary par upload ho gaye! ☁️');
-  updatePhotoCount(data);
+  updatePhotoCount(finalData);
 }
 
 function updateProgress(done, total, filename) {
